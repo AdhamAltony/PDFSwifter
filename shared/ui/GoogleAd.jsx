@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+const ADSENSE_CLIENT =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-6225595378099419";
 
 /**
  * Lightweight wrapper around a Google AdSense responsive ad unit.
@@ -10,7 +11,7 @@ const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
  */
 export default function GoogleAd({
   slot,
-  format = "auto",
+  format = "autorelaxed",
   layout,
   responsive = "true",
   className = "",

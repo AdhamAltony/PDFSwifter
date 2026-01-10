@@ -13,9 +13,7 @@ import {
   HashtagIcon,
   Squares2X2Icon,
   PencilSquareIcon,
-
   RectangleGroupIcon,
-
 } from '@heroicons/react/24/outline';
 
 
@@ -224,9 +222,11 @@ const toolsWithTier = tools
   .filter( ( tool ) => AVAILABLE_TOOL_HREFS.has( tool.href ) )
   .map( ( tool ) => ( {
   ...tool,
+  key: tool.href.replace( '/tools/', '' ),
   tier: PREMIUM_TOOL_HREFS.has( tool.href ) ? 'premium' : 'freemium',
   featured: FEATURED_TOOL_HREFS.has( tool.href ),
 } ) )
   .sort( ( a, b ) => Number( b.featured ) - Number( a.featured ) );
 
-export default toolsWithTier
+export default toolsWithTier;
+export const ALL_TOOLS = toolsWithTier;

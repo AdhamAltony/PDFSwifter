@@ -42,7 +42,7 @@ const Benefits = () => {
             <div className="relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-6 shadow-sm backdrop-blur">
               <div aria-hidden className="absolute -top-6 -left-6 h-16 w-16 rounded-full bg-rose-100 blur-2xl" />
               <div className="text-2xl">💸</div>
-              <h3 className="mt-3 text-lg font-semibold text-slate-900">Free essentials</h3>
+              <h3 className="mt-3 text-lg font-semibold text-slate-900">Standard essentials</h3>
               <p className="mt-2 text-sm text-[color:var(--muted)]">
                 Use the most common tools at no cost. No watermark added!
               </p>

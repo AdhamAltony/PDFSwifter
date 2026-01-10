@@ -10,7 +10,7 @@ export async function POST ( req ) {
         const email = form.get( 'email' );
         const password = form.get( 'password' );
         const subscription_type = 'free';
-        const usage_limit = 5;
+        const usage_limit = 3;
         const has_ads = 1;
         const status = 'active';
         const auth_provider = 'local';

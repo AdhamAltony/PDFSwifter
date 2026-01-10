@@ -79,7 +79,7 @@ const ToolCard = ({
         <span
           className={ `ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${ tierBadgeClasses }` }
         >
-          {isPremium ? 'Premium' : 'Freemium'}
+          {isPremium ? "Premium" : "Standard"}
         </span>
       </h3>
   

@@ -1,11 +1,14 @@
 import ToolsPageView from "@/features/tools/ui/ToolsPageView";
+import { getAllowedToolKeys } from "@/lib/tools/tools-policy";
 
 export const metadata = {
-    title: "All PDF Tools | PDF Tools",
+    title: "All tools | pdfSwiffter",
     description:
-        "Browse every PDF tool by tier and category. Convert, compress, rotate, and download with a clean workflow.",
+        "Browse every pdfSwiffter tool by tier and category. Convert, compress, rotate, and download with a clean workflow.",
 };
+export const dynamic = "force-dynamic";
 
-export default function ToolsPage() {
-    return <ToolsPageView />;
+export default async function ToolsPage() {
+    const allowedToolKeys = await getAllowedToolKeys();
+    return <ToolsPageView allowedToolKeys={allowedToolKeys} />;
 }

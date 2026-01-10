@@ -16,14 +16,22 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-export default function HomeToolsSection({ query = "" }) {
+export default function HomeToolsSection({ query = "", allowedToolKeys }) {
+  const allowedSet = useMemo(
+    () => (allowedToolKeys ? new Set(allowedToolKeys) : null),
+    [allowedToolKeys]
+  );
+  const visibleTools = useMemo(
+    () => ToolList.filter((tool) => !allowedSet || allowedSet.has(tool.key)),
+    [allowedSet]
+  );
   const premiumTools = useMemo(
-    () => ToolList.filter((tool) => tool.tier === "premium"),
-    []
+    () => visibleTools.filter((tool) => tool.tier === "premium"),
+    [visibleTools]
   );
   const freemiumTools = useMemo(
-    () => ToolList.filter((tool) => tool.tier !== "premium"),
-    []
+    () => visibleTools.filter((tool) => tool.tier !== "premium"),
+    [visibleTools]
   );
 
   const filteredPremium = useMemo(() => {
@@ -160,14 +168,14 @@ export default function HomeToolsSection({ query = "" }) {
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-700">
-                  Freemium Essentials
+                  Standard Essentials
                 </p>
                 <h2 className="mt-2 text-2xl md:text-3xl font-[var(--font-display)] text-slate-900">
                   Everyday PDF tasks, ready in a click
                 </h2>
                 <p className="mt-2 text-sm md:text-base text-[color:var(--muted)] max-w-2xl">
                   {hasQuery
-                    ? "Freemium matches based on your search."
+                    ? "Standard matches based on your search."
                     : "Fast conversions and edits without the friction."}
                 </p>
               </div>

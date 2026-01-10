@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import UsageLimitModal from './UsageLimitModal';
+import UsageLimitModal from "./UsageLimitModal";
+import UsageBanner from "./UsageBanner";
 // Uploads are handled by the server API at /api/tools/[tool]
 
 export default function ToolRunner({ tool }) {
@@ -14,6 +15,8 @@ export default function ToolRunner({ tool }) {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
+  const [usageStatus, setUsageStatus] = useState(null);
+  const [usageLoading, setUsageLoading] = useState(true);
 
   // Convert FileList to array and reset message
   const handleFiles = (fileList) => {
@@ -76,6 +79,36 @@ export default function ToolRunner({ tool }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    const loadUsage = async () => {
+      setUsageLoading(true);
+      try {
+        const res = await fetch(`/api/tools/${encodeURIComponent(tool)}/usage`, { cache: "no-store" });
+        if (!res.ok) {
+          setUsageStatus(null);
+          return;
+        }
+        const body = await res.json();
+        if (active) {
+          setUsageStatus(body.usage || null);
+        }
+      } catch {
+        if (active) {
+          setUsageStatus(null);
+        }
+      } finally {
+        if (active) {
+          setUsageLoading(false);
+        }
+      }
+    };
+    loadUsage();
+    return () => {
+      active = false;
+    };
+  }, [tool]);
+
   const upload = async () => {
     if (!files.length) {
       setMessage("Please select at least one file to upload.");
@@ -102,6 +135,9 @@ export default function ToolRunner({ tool }) {
         let body = null;
         try { body = await res.json(); } catch (e) { body = { message: 'Usage limit exceeded' }; }
         setMessage(body.message || 'Usage limit exceeded.');
+        if (body.usage) {
+          setUsageStatus(body.usage);
+        }
         setUsageInfo(body);
         setUsageModalOpen(true);
         setUploading(false);
@@ -121,10 +157,12 @@ export default function ToolRunner({ tool }) {
           const body = await res.json();
           setMessage(body.message || `Uploaded ${body.files?.length || files.length} file(s) to ${tool}.`);
           // If API returned usage info, show a small notification (optional)
-          if (body.usage && body.usage.remaining !== undefined) {
-            // you could display this somewhere in the UI; for now just set a message
+          if (body.usage && typeof body.usage.remaining === "number") {
             const rem = body.usage.remaining;
-            setMessage((prev) => `${prev} (${rem} uses remaining)`);
+            setMessage((prev) => `${prev} (${rem} uses remaining this month)`);
+            setUsageStatus(body.usage);
+          } else if (body.usage) {
+            setUsageStatus(body.usage);
           }
           if (body.success) {
             setFiles([]);
@@ -153,6 +191,15 @@ export default function ToolRunner({ tool }) {
           a.click();
           a.remove();
           setMessage(`Downloaded ${filename}`);
+          const usageLimit = res.headers.get("x-usage-limit");
+          const usageRemaining = res.headers.get("x-usage-remaining");
+          if (usageLimit || usageRemaining) {
+            setUsageStatus((prev) => ({
+              ...(prev || {}),
+              limit: usageLimit ? Number(usageLimit) : prev?.limit,
+              remaining: usageRemaining ? Number(usageRemaining) : prev?.remaining,
+            }));
+          }
           // cleanup
           setTimeout(() => URL.revokeObjectURL(url), 5000);
           setFiles([]);
@@ -179,6 +226,8 @@ export default function ToolRunner({ tool }) {
           You are using: <span className="font-medium text-teal-600">{tool}</span>
         </p>
       </div>
+
+      <UsageBanner usage={usageStatus} loading={usageLoading} />
 
       {/* Drag & Drop */}
       <div
@@ -299,8 +348,12 @@ export default function ToolRunner({ tool }) {
         open={usageModalOpen}
         onClose={() => setUsageModalOpen(false)}
         title={usageInfo?.title || 'Usage limit reached'}
-        message={usageInfo?.message || (usageInfo?.error || 'You have reached the free usage limit for this tool. Upgrade to premium to continue using this tool without limits.')}
-        upgradeUrl={usageInfo?.upgradeUrl || '/signup'}
+        message={
+          usageInfo?.message ||
+          (usageInfo?.error ||
+            "You have reached the Standard plan limit for this tool (3 uses per month). Upgrade to Premium for unlimited usage.")
+        }
+        upgradeUrl={usageInfo?.upgradeUrl || '/premium'}
       />
     </div>
   );

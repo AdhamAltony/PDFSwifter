@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { LinkIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import UsageLimitModal from "./UsageLimitModal";
+import UsageBanner from "./UsageBanner";
 
 export default function UrlToolRunner({ tool }) {
   const [url, setUrl] = useState("");
@@ -17,6 +19,10 @@ export default function UrlToolRunner({ tool }) {
   const [manualDownloadData, setManualDownloadData] = useState(null);
   const jobPollRef = useRef(null);
   const showIndeterminate = !jobProgressKnown && !["completed", "failed", "error"].includes(jobStatus);
+  const [usageStatus, setUsageStatus] = useState(null);
+  const [usageLoading, setUsageLoading] = useState(true);
+  const [usageModalOpen, setUsageModalOpen] = useState(false);
+  const [usageInfo, setUsageInfo] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -25,6 +31,36 @@ export default function UrlToolRunner({ tool }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    const loadUsage = async () => {
+      setUsageLoading(true);
+      try {
+        const res = await fetch(`/api/tools/${encodeURIComponent(tool)}/usage`, { cache: "no-store" });
+        if (!res.ok) {
+          setUsageStatus(null);
+          return;
+        }
+        const body = await res.json();
+        if (active) {
+          setUsageStatus(body.usage || null);
+        }
+      } catch {
+        if (active) {
+          setUsageStatus(null);
+        }
+      } finally {
+        if (active) {
+          setUsageLoading(false);
+        }
+      }
+    };
+    loadUsage();
+    return () => {
+      active = false;
+    };
+  }, [tool]);
 
   const cleanupJobPolling = () => {
     if (jobPollRef.current) {
@@ -281,6 +317,16 @@ export default function UrlToolRunner({ tool }) {
         }),
       });
 
+      if (response.status === 429) {
+        const errorData = await response.json().catch(() => ({}));
+        setUsageInfo(errorData);
+        if (errorData.usage) {
+          setUsageStatus(errorData.usage);
+        }
+        setUsageModalOpen(true);
+        throw new Error(errorData.message || "Usage limit reached");
+      }
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `Server error: ${response.status}`);
@@ -291,6 +337,9 @@ export default function UrlToolRunner({ tool }) {
       if (contentType?.includes("application/json")) {
         const data = await response.json();
         if (data.success) {
+          if (data.usage) {
+            setUsageStatus(data.usage);
+          }
           const downloadResult = data.result;
           if ((tool === "youtube-download" || tool === "tiktok-download") && downloadResult?.job) {
             jobStarted = true;
@@ -334,6 +383,15 @@ export default function UrlToolRunner({ tool }) {
           contentType: response.headers.get("content-type") || "application/octet-stream",
         });
         setMessage("✓ Download ready! Click the button below to download.");
+        const usageLimit = response.headers.get("x-usage-limit");
+        const usageRemaining = response.headers.get("x-usage-remaining");
+        if (usageLimit || usageRemaining) {
+          setUsageStatus((prev) => ({
+            ...(prev || {}),
+            limit: usageLimit ? Number(usageLimit) : prev?.limit,
+            remaining: usageRemaining ? Number(usageRemaining) : prev?.remaining,
+          }));
+        }
       }
     } catch (error) {
       console.error("Processing error:", error);
@@ -365,6 +423,9 @@ export default function UrlToolRunner({ tool }) {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <div className="mb-6">
+        <UsageBanner usage={usageStatus} loading={usageLoading} />
+      </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-teal-400 transition-colors">
           <LinkIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -482,6 +543,17 @@ export default function UrlToolRunner({ tool }) {
         <p>Supported platforms: TikTok, YouTube</p>
         <p>Downloads videos in HD quality when available</p>
       </div>
+
+      <UsageLimitModal
+        open={usageModalOpen}
+        onClose={() => setUsageModalOpen(false)}
+        title={usageInfo?.title || "Usage limit reached"}
+        message={
+          usageInfo?.message ||
+          "You have reached the Standard plan limit for this tool. Upgrade to Premium for unlimited usage."
+        }
+        upgradeUrl={usageInfo?.upgradeUrl || "/premium"}
+      />
     </div>
   );
 }

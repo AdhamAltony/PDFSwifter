@@ -1,66 +1,156 @@
-import React from 'react';
-import ContentPage from '@/features/content/ui/ContentPage';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
+import Footer from "@/shared/ui/Footer";
 
 export const metadata = {
-  title: 'Help Center | PDF-tools',
-  description: 'FAQs and support resources for PDF-tools.',
+  title: "Help Center | pdfSwiffter",
+  description: "FAQs and support resources for pdfSwiffter.",
 };
+
+const faqs = [
+  {
+    question: "Where do I download my file?",
+    answer: "After conversion, you will be redirected to a result page with a download button.",
+  },
+  {
+    question: "My download expired.",
+    answer: "Downloads are available for 30 minutes. Re-run the tool or contact support with your details.",
+  },
+  {
+    question: "Why is there a usage limit?",
+    answer:
+      "The Standard plan includes 3 uses per tool each month to ensure fair access. Upgrading removes limits and adds priority processing.",
+  },
+  {
+    question: "How do I check remaining usage?",
+    answer: "Each tool shows your remaining runs for the month inside the tool workspace.",
+  },
+];
+
+const supportCards = [
+  {
+    title: "Start here",
+    detail: "Review the basics of uploads, processing, and downloads.",
+    cta: "Browse tools",
+    href: "/tools",
+  },
+  {
+    title: "Contact support",
+    detail: "Send a message to the team with context and file details.",
+    cta: "Send message",
+    href: "/contact",
+  },
+  {
+    title: "Upgrade to Premium",
+    detail: "Unlock unlimited runs and priority handling.",
+    cta: "See Premium",
+    href: "/premium",
+  },
+];
 
 export default function HelpPage() {
   return (
-    <ContentPage
-      title="Help Center"
-      intro="Find answers to common questions and ways to get support."
+    <div
+      className="min-h-screen bg-[#f4f7f2] text-slate-900 font-[var(--font-body)]"
+      style={{
+        "--font-display": '"DM Serif Display", "Georgia", serif',
+        "--font-body": '"Space Grotesk", "Trebuchet MS", sans-serif',
+      }}
     >
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Need quick help?</h3>
-        <p className="text-blue-700">
-          Check our FAQ below or reach out to our support team. We&apos;re here to help you get the most out of PDF-tools.
-        </p>
-      </div>
+      <header className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-lime-50" />
+        <div className="absolute -top-24 right-0 h-56 w-56 rounded-full bg-emerald-200/60 blur-3xl" />
+        <div className="absolute -bottom-24 left-8 h-64 w-64 rounded-full bg-lime-200/60 blur-3xl" />
 
-      <h2>Frequently asked questions</h2>
-      
-      <div className="space-y-6 my-8">
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Where do I download my file?</h3>
-          <p className="text-gray-700">After conversion, you will be redirected to a result page with a download button.</p>
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 lg:py-20">
+          <span className="inline-flex items-center rounded-full border border-emerald-200 bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.35em] text-emerald-800">
+            Help Center
+          </span>
+          <h1 className="mt-6 text-4xl font-extrabold leading-tight md:text-5xl font-[var(--font-display)]">
+            Answers, guidance, and direct support.
+          </h1>
+          <p className="mt-4 max-w-2xl text-base text-slate-700 md:text-lg">
+            Get the fastest path to a clean conversion. Search for help, browse FAQs, or reach the team.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <label className="block text-sm font-semibold text-slate-600">Search help articles</label>
+            <div className="mt-2 flex items-center rounded-2xl border border-slate-200 bg-white/90 px-4 py-2 shadow-sm">
+              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Search</span>
+              <input
+                type="text"
+                placeholder="Search by tool or question..."
+                className="ml-3 w-full bg-transparent text-sm text-slate-700 focus:outline-none"
+              />
+            </div>
+          </div>
         </div>
-        
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">My download expired.</h3>
-          <p className="text-gray-700">Downloads are available for 30 minutes. Re-run the tool or contact support with your details.</p>
-        </div>
-        
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Why is there a usage limit?</h3>
-          <p className="text-gray-700">Free tier has a daily cap to ensure fair access. Upgrading removes limits and adds priority processing.</p>
-        </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        <div className="bg-green-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-green-800 mb-3">💬 Contact Support</h3>
-          <p className="text-green-700 mb-4">Get personalized help from our team.</p>
-          <Link href="/contact" className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
-            Send Message
-          </Link>
-        </div>
-        
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-800 mb-3">📧 Email Us</h3>
-          <p className="text-blue-700 mb-4">Direct email for technical questions.</p>
-          <a href="mailto:support@example.com" className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-            support@example.com
-          </a>
-        </div>
-      </div>
+      <main className="mx-auto max-w-6xl px-6 py-12 space-y-12">
+        <section className="grid gap-6 md:grid-cols-3">
+          {supportCards.map((card) => (
+            <div key={card.title} className="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Support</p>
+              <h2 className="mt-3 text-xl font-semibold text-slate-900">{card.title}</h2>
+              <p className="mt-3 text-sm text-slate-600">{card.detail}</p>
+              <Link
+                href={card.href}
+                className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+              >
+                {card.cta}
+              </Link>
+            </div>
+          ))}
+        </section>
 
-      <h2>Developer docs</h2>
-      <p>
-        For integration details, see our README and API routes in the repository.
-      </p>
-    </ContentPage>
+        <section className="rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">FAQ</p>
+              <h2 className="mt-3 text-2xl font-semibold text-slate-900">Frequently asked questions</h2>
+            </div>
+            <Link href="/contact" className="text-sm font-semibold text-emerald-700 hover:underline">
+              Still need help?
+            </Link>
+          </div>
+          <div className="mt-6 divide-y divide-slate-200">
+            {faqs.map((faq) => (
+              <div key={faq.question} className="py-4">
+                <h3 className="text-lg font-semibold text-slate-900">{faq.question}</h3>
+                <p className="mt-2 text-sm text-slate-600">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-3xl bg-slate-900 p-8 text-white shadow-lg">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.3em] text-emerald-200">Need faster help?</p>
+            <h2 className="mt-3 text-2xl font-semibold font-[var(--font-display)]">
+              Premium support accelerates your workflows.
+            </h2>
+            <p className="mt-3 text-sm text-slate-200">
+              Priority responses and workflow reviews are available for Premium customers.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/premium"
+                className="rounded-full bg-emerald-300 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-200"
+              >
+                Explore Premium
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-full border border-white/40 px-5 py-2 text-sm font-semibold text-white hover:border-white"
+              >
+                Contact support
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

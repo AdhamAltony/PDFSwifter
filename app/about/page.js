@@ -4,102 +4,177 @@ import Footer from "@/shared/ui/Footer";
 
 export default function About() {
   const team = [
-    { name: "Adham Ahmed", role: "Founder & Engineer", bio: "Building delightful, tiny utilities that save time and reduce friction for people who work with PDFs.", twitter: "https://twitter.com" },
-    { name: "Lina Hassan", role: "Product Designer", bio: "Designs simple, focused interfaces and delightful interactions.", twitter: "https://twitter.com" },
-    { name: "Sam Ortiz", role: "Frontend Engineer", bio: "Turns designs into responsive, accessible UI and maintains the component library.", twitter: "https://twitter.com" },
+    {
+      name: "Adham Ahmed",
+      role: "Founder & Engineer",
+      bio: "Building tiny utilities that remove friction for people who work with PDFs every day.",
+      twitter: "https://twitter.com",
+    },
+    {
+      name: "Lina Hassan",
+      role: "Product Designer",
+      bio: "Designs focused interfaces and guides the visual language of pdfSwiffter.",
+      twitter: "https://twitter.com",
+    },
+    {
+      name: "Sam Ortiz",
+      role: "Frontend Engineer",
+      bio: "Turns flows into responsive, accessible UI with reliable performance.",
+      twitter: "https://twitter.com",
+    },
+  ];
+
+  const stats = [
+    { label: "Tools shipped", value: "14" },
+    { label: "Avg success rate", value: "98.7%" },
+    { label: "Teams served", value: "320+" },
+  ];
+
+  const principles = [
+    {
+      title: "Single-purpose focus",
+      description: "Each tool does one job quickly so teams can chain workflows without confusion.",
+    },
+    {
+      title: "Reliability gate",
+      description: "Tools stay live only when they meet success-rate requirements under real traffic.",
+    },
+    {
+      title: "Privacy-first processing",
+      description: "We minimize storage and keep documents in transient storage windows.",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="max-w-6xl mx-auto px-6 py-16">
-        <header className="text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900">About PDF-tools</h1>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Small, focused utilities that help you inspect, edit and transform PDFs quickly — no heavy suites,
-            just the right tool for the job.
-          </p>
-        </header>
+    <div
+      className="min-h-screen bg-[#f5f1e8] text-slate-900 font-[var(--font-body)]"
+      style={{
+        "--font-display": '"Libre Baskerville", "Georgia", serif',
+        "--font-body": '"Manrope", "Trebuchet MS", sans-serif',
+      }}
+    >
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#fbf7ef] via-[#f5f1e8] to-[#edf2e3]" />
+        <div className="absolute -top-24 right-0 h-56 w-56 rounded-full bg-emerald-200/60 blur-3xl" />
+        <div className="absolute -bottom-24 left-10 h-72 w-72 rounded-full bg-amber-200/70 blur-3xl" />
 
-        <section className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Our mission</h2>
-            <p className="mt-4 text-gray-700 leading-relaxed">
-              We believe productivity comes from removing friction. PDF workflows are notoriously clunky — our
-              goal is to provide tiny, reliable tools that solve a single job well. Whether you need to compress,
-              split, merge or extract text, PDF-tools aims to make that task fast and predictable.
-            </p>
-
-            <h3 className="mt-6 text-lg font-medium text-gray-900">How we work</h3>
-            <ul className="mt-3 space-y-2 text-gray-700">
-              <li>• Ship small, test often — iterate quickly on tiny improvements.</li>
-              <li>• Stay focused — each tool solves one problem and does it well.</li>
-              <li>• Respect privacy — we design for local-first and minimal data exposure.</li>
-            </ul>
-          </div>
-
-          <div className="rounded-lg bg-linear-to-br from-white to-gray-50 p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-900">Why PDF-tools?</h3>
-            <p className="mt-3 text-gray-700 leading-relaxed">
-              Many teams tolerate slow manual steps because a single all-in-one app feels safer. We prove an
-              alternative: focused tools that are fast to load, easy to automate, and simple to understand.
-            </p>
-
-            <div className="mt-6 grid grid-cols-1 gap-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-none h-10 w-10 rounded-md bg-teal-50 text-teal-600 flex items-center justify-center">✓</div>
-                <div>
-                  <p className="font-medium text-gray-900">Reliable</p>
-                  <p className="text-sm text-gray-600">Tools that behave predictably under load and edge cases.</p>
-                </div>
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 lg:py-20">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.35em] text-amber-800">
+                About pdfSwiffter
+              </span>
+              <h1 className="mt-6 text-4xl font-extrabold leading-tight md:text-5xl font-[var(--font-display)]">
+                Focused utilities for the way teams really work.
+              </h1>
+              <p className="mt-4 max-w-xl text-base text-slate-700 md:text-lg">
+                We build small, reliable PDF workflows so you can move faster without heavyweight suites. Every tool
+                solves a single job with clarity, speed, and trust.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="rounded-2xl bg-white/90 p-4 shadow-sm">
+                    <p className="text-2xl font-extrabold text-slate-900">{stat.value}</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              <div className="flex items-start gap-3">
-                <div className="flex-none h-10 w-10 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">⚡</div>
-                <div>
-                  <p className="font-medium text-gray-900">Fast</p>
-                  <p className="text-sm text-gray-600">Optimized for quick results — no bloat, no waiting.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex-none h-10 w-10 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center">🔒</div>
-                <div>
-                  <p className="font-medium text-gray-900">Private</p>
-                  <p className="text-sm text-gray-600">Minimal telemetry and clear privacy choices.</p>
-                </div>
+            <div className="rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.12)]">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Our promise</p>
+              <h2 className="mt-4 text-2xl font-semibold text-slate-900 font-[var(--font-display)]">
+                Keep workflows calm, not chaotic.
+              </h2>
+              <p className="mt-3 text-sm text-slate-600">
+                pdfSwiffter is designed for clarity. You get fast conversions, trustworthy outputs, and a roadmap driven
+                by the workflows people run every week.
+              </p>
+              <div className="mt-6 space-y-3 text-sm text-slate-700">
+                {[
+                  "Predictable output under real workloads.",
+                  "Quick onboarding for new team members.",
+                  "Premium workflows for high-volume teams.",
+                ].map((point) => (
+                  <div key={point} className="flex items-start gap-3">
+                    <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-6xl px-6 py-16 space-y-16">
+        <section className="grid gap-8 lg:grid-cols-3">
+          {principles.map((principle) => (
+            <div key={principle.title} className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Principle</p>
+              <h3 className="mt-4 text-xl font-semibold text-slate-900">{principle.title}</h3>
+              <p className="mt-3 text-sm text-slate-600">{principle.description}</p>
+            </div>
+          ))}
         </section>
 
-        <section className="mt-12">
-          <h2 className="text-2xl font-semibold text-gray-900">Meet the team</h2>
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {team.map((m) => (
-              <div key={m.name} className="rounded-lg bg-white p-4 shadow-sm">
+        <section>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-400">The team</p>
+              <h2 className="mt-3 text-3xl font-semibold font-[var(--font-display)] text-slate-900">
+                People behind the tools.
+              </h2>
+            </div>
+            <Link href="/contact" className="text-sm font-semibold text-slate-900 underline">
+              Work with us
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {team.map((member) => (
+              <div key={member.name} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">{m.name.split(" ")[0][0]}</div>
+                  <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-semibold">
+                    {member.name.split(" ")[0][0]}
+                  </div>
                   <div>
-                    <p className="font-medium text-gray-900">{m.name}</p>
-                    <p className="text-sm text-gray-500">{m.role}</p>
+                    <p className="font-semibold text-slate-900">{member.name}</p>
+                    <p className="text-sm text-slate-500">{member.role}</p>
                   </div>
                 </div>
-                <p className="mt-3 text-sm text-gray-700">{m.bio}</p>
-                <div className="mt-3">
-                  <Link href={m.twitter} className="text-sm text-teal-600 hover:underline">Follow</Link>
+                <p className="mt-4 text-sm text-slate-600">{member.bio}</p>
+                <div className="mt-4">
+                  <Link href={member.twitter} className="text-sm font-semibold text-emerald-700 hover:underline">
+                    Follow
+                  </Link>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-  <section className="mt-12 rounded-lg bg-linear-to-r from-teal-600 to-indigo-600 p-8 text-white">
+        <section className="rounded-3xl bg-gradient-to-br from-amber-200 via-amber-100 to-emerald-100 px-8 py-10 shadow-lg">
           <div className="max-w-3xl">
-            <h3 className="text-2xl font-semibold">Want to help improve PDF-tools?</h3>
-            <p className="mt-3 text-white/90">We welcome contributions, feedback, and bug reports. Open an issue or drop us a note.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/" className="inline-block rounded bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20">Explore tools</Link>
-              <a href="mailto:hello@example.com" className="inline-block rounded bg-white px-4 py-2 text-sm font-medium text-teal-700">Contact us</a>
+            <p className="text-xs uppercase tracking-[0.35em] text-amber-700">Join the mission</p>
+            <h3 className="mt-4 text-3xl font-semibold font-[var(--font-display)] text-slate-900">
+              Help shape what we build next.
+            </h3>
+            <p className="mt-3 text-sm text-slate-700">
+              Share feedback, request a workflow review, or tell us what tool would save your team the most time.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-4">
+              <Link
+                href="/tools"
+                className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+              >
+                Explore tools
+              </Link>
+              <a
+                href="mailto:hello@example.com"
+                className="rounded-full border border-slate-900/30 px-5 py-2 text-sm font-semibold text-slate-900 hover:border-slate-900/60"
+              >
+                Contact us
+              </a>
             </div>
           </div>
         </section>

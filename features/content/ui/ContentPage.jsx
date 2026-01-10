@@ -1,56 +1,65 @@
-import React from 'react';
+import React from "react";
 
-// Server Component - Enhanced shared layout for content pages
-// This component runs entirely on the server for optimal performance
-export default function ContentPage({ title, intro, children }) {
+// Server Component - Premium-styled layout for content pages
+export default function ContentPage({ title, intro, children, eyebrow = "pdfSwiffter" }) {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-gray-100">
-      {/* Hero Section */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <header className="text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-              {title}
-            </h1>
-            {intro && (
-              <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                {intro}
-              </p>
-            )}
-          </header>
-        </div>
-      </div>
+    <div
+      className="min-h-screen bg-[#f6f4ef] text-slate-900 font-[var(--font-body)]"
+      style={{
+        "--font-display": '"Fraunces", "Georgia", serif',
+        "--font-body": '"Space Grotesk", "Trebuchet MS", sans-serif',
+      }}
+    >
+      <section className="relative overflow-hidden bg-slate-950 text-white">
+        <div className="absolute -top-24 right-0 h-56 w-56 rounded-full bg-amber-400/40 blur-3xl" />
+        <div className="absolute -bottom-24 left-8 h-64 w-64 rounded-full bg-teal-500/30 blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-400 via-teal-400 to-slate-900" />
 
-      {/* Content Section */}
-      <main className="mx-auto max-w-4xl px-6 py-16">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-          <article className="prose prose-lg prose-slate max-w-none p-8 md:p-12 
-            [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:pb-3 [&_h2]:border-b [&_h2]:border-gray-200 [&_h2:first-child]:mt-0
-            [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-4
-            [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-6
+        <div className="relative z-10 mx-auto max-w-5xl px-6 py-14 md:py-20">
+          <span className="inline-flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs uppercase tracking-[0.35em] text-amber-200">
+            {eyebrow}
+          </span>
+          <h1 className="mt-5 text-4xl font-extrabold leading-tight md:text-5xl font-[var(--font-display)]">
+            {title}
+          </h1>
+          {intro && (
+            <p className="mt-4 text-base text-slate-200 md:text-lg">
+              {intro}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-5xl px-6 py-12">
+        <div className="rounded-3xl border border-slate-200 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+          <article
+            className="prose prose-lg prose-slate max-w-none p-8 md:p-12
+            [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:pb-3 [&_h2]:border-b [&_h2]:border-slate-200 [&_h2:first-child]:mt-0
+            [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-slate-900 [&_h3]:mt-8 [&_h3]:mb-4
+            [&_p]:text-slate-700 [&_p]:leading-relaxed [&_p]:mb-6
             [&_ul]:space-y-3 [&_ul]:mb-6
-            [&_li]:text-gray-700 [&_li]:leading-relaxed
-            [&_a]:text-blue-600 [&_a]:font-medium [&_a]:hover:text-blue-700 [&_a]:hover:underline [&_a]:transition-colors
-            [&_strong]:font-semibold [&_strong]:text-gray-900">
+            [&_li]:text-slate-700 [&_li]:leading-relaxed
+            [&_a]:text-teal-700 [&_a]:font-medium [&_a]:hover:text-teal-800 [&_a]:hover:underline [&_a]:transition-colors
+            [&_strong]:font-semibold [&_strong]:text-slate-900"
+          >
             {children}
           </article>
         </div>
 
-        {/* Footer CTA - Server-rendered static content */}
-        <div className="mt-12 text-center">
-          <div className="bg-linear-to-r from-blue-600 to-indigo-600 rounded-xl p-8 text-white">
-            <h3 className="text-xl font-semibold mb-3">Questions or feedback?</h3>
-            <p className="text-blue-100 mb-6">We&apos;re here to help. Reach out anytime.</p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a 
-                href="/contact" 
-                className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg font-medium transition-colors"
+        <div className="mt-12">
+          <div className="rounded-3xl bg-gradient-to-br from-amber-200 via-amber-100 to-teal-100 p-8 text-slate-900 shadow-lg">
+            <h3 className="text-xl font-semibold font-[var(--font-display)]">Questions or feedback?</h3>
+            <p className="mt-3 text-sm text-slate-700">We&apos;re here to help. Reach out anytime.</p>
+            <div className="mt-6 flex flex-wrap gap-4">
+              <a
+                href="/contact"
+                className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-800"
               >
                 Contact Support
               </a>
-              <a 
-                href="/help" 
-                className="bg-white text-blue-600 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition-colors"
+              <a
+                href="/help"
+                className="rounded-full border border-slate-900/30 px-5 py-2 text-sm font-semibold text-slate-900 hover:border-slate-900/60"
               >
                 Help Center
               </a>

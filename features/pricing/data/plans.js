@@ -1,13 +1,13 @@
 export const plans = [
   {
-    name: 'Free',
+    name: 'Standard',
     price: '$0',
     period: 'forever',
-    description: 'Perfect for trying out our PDF tools',
+    description: 'For occasional PDF tasks and lightweight workflows',
     features: [
-      '5 tool uses per device',
-      'All PDF tools access',
-      'Basic file processing',
+      '3 uses per tool each month',
+      'Curated reliable PDF tools',
+      'Basic processing features',
       'No credit card required',
     ],
     cta: 'Get Started',
@@ -18,7 +18,7 @@ export const plans = [
     name: 'Premium',
     price: '$9',
     period: 'per month',
-    description: 'Unlimited access to all PDF tools',
+    description: 'Unlimited access to premium-ready PDF tools',
     features: [
       'Unlimited tool uses',
       'All PDF tools access',

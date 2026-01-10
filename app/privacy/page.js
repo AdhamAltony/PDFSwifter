@@ -2,8 +2,8 @@ import React from 'react';
 import ContentPage from '@/features/content/ui/ContentPage';
 
 export const metadata = {
-  title: 'Privacy Policy | PDF-tools',
-  description: 'How PDF-tools collects, uses, and protects your data.',
+  title: 'Privacy Policy | pdfSwiffter',
+  description: 'How pdfSwiffter collects, uses, and protects your data.',
 };
 
 export default function PrivacyPage() {
@@ -12,49 +12,99 @@ export default function PrivacyPage() {
       title="Privacy Policy"
       intro="We design our tools to minimize data collection and respect your privacy."
     >
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Quick Summary</h3>
-        <p className="text-blue-700">
-          We process your files temporarily, collect minimal analytics, and never sell your personal data. 
-          Your privacy matters to us.
+      <section className="grid gap-6 md:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Principle</p>
+          <h3 className="mt-3 text-lg font-semibold text-slate-900">Minimal collection</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            We only collect what is needed to run the tools, keep them reliable, and support your account.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Principle</p>
+          <h3 className="mt-3 text-lg font-semibold text-slate-900">Short retention</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Files are processed temporarily and removed shortly after your download is ready.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Principle</p>
+          <h3 className="mt-3 text-lg font-semibold text-slate-900">No data resale</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            We never sell personal data. We only share data with trusted vendors needed for core operations.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <h2>Information we collect</h2>
+        <p>
+          We aim to process files in-memory when possible. When a tool needs temporary storage to provide a
+          download link, we store it securely and remove it after a short period.
         </p>
-      </div>
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Typical data points</h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-700">
+            <li>• File metadata (name, size, type)</li>
+            <li>• Processing timestamps</li>
+            <li>• Tool usage statistics</li>
+            <li>• Error logs (anonymized)</li>
+            <li>• Account email for support (if provided)</li>
+            <li>• Payment confirmation status (via provider)</li>
+          </ul>
+        </div>
+      </section>
 
-      <h2>Information we collect</h2>
-      <p>
-        We aim to process files in-memory when possible. If a tool needs to persist output temporarily to provide
-        a download link, we store it securely and remove it after a short period. We do not sell personal data.
-      </p>
-      
-      <div className="bg-gray-50 rounded-lg p-6 my-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Types of data we may collect:</h3>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <li>• File metadata (name, size, type)</li>
-          <li>• Processing timestamps</li>
-          <li>• Tool usage statistics</li>
-          <li>• Error logs (anonymized)</li>
-        </ul>
-      </div>
+      <section className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900">Usage analytics</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            We record anonymized usage metrics (tool name, timestamp, status) to improve reliability and capacity
+            planning. Signed-in actions may be associated with your account to provide history or support.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900">Payments</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Payments are handled by third-party providers. We never store full payment details on our servers.
+          </p>
+        </div>
+      </section>
 
-      <h2>Usage analytics</h2>
-      <p>
-        We may record anonymized usage metrics such as tool name, timestamp, and coarse-grained status
-        (e.g., completed/failed) to improve reliability. Signed-in actions may be associated with your account
-        to provide history or support.
-      </p>
-
-      <h2>Payments</h2>
-      <p>
-        Payments are processed by third-party providers. We never store your full payment details on our servers.
-      </p>
-
-      <h2>Contact</h2>
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-        <p className="text-green-800">
-          Questions about privacy? Email us at <a href="mailto:hello@example.com" className="font-semibold">hello@example.com</a>.
-          We typically respond within 24 hours.
+      <section className="mt-12">
+        <h2>Retention and deletion</h2>
+        <p>
+          Files are removed after processing within a short retention window. Logs and aggregated metrics are
+          kept only as long as needed to maintain service reliability.
         </p>
-      </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">Temporary storage</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Files are stored only long enough for processing and download delivery.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">Your choices</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              You can request deletion or account changes by contacting support at any time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <h2>Contact</h2>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+          <p className="text-emerald-900">
+            Questions about privacy? Email us at{" "}
+            <a href="mailto:hello@example.com" className="font-semibold underline">
+              hello@example.com
+            </a>
+            . We typically respond within 24 hours.
+          </p>
+        </div>
+      </section>
     </ContentPage>
   );
 }

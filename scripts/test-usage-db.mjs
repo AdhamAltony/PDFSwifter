@@ -1,16 +1,14 @@
-import { incrementUsage, canUse, remaining } from '../lib/server/usage-db.js';
+import { incrementUsage, getUsageStatus } from '../lib/usage/usage-db.js';
 
 async function run() {
   const ip = '127.0.0.1';
   const token = 'test-token';
   console.log('Starting usage test for', ip, token);
-  console.log('Can use (before):', await canUse(ip, token, 5));
-  console.log('Remaining (before):', await remaining(ip, token, 5));
+  console.log('Status (before):', await getUsageStatus({ ip, token, toolKey: 'compress-pdf' }));
   console.log('Incrementing...');
-  const rec = await incrementUsage(ip, token);
+  const rec = await incrementUsage({ ip, token, toolKey: 'compress-pdf' });
   console.log('After increment:', rec);
-  console.log('Can use (after):', await canUse(ip, token, 5));
-  console.log('Remaining (after):', await remaining(ip, token, 5));
+  console.log('Status (after):', await getUsageStatus({ ip, token, toolKey: 'compress-pdf' }));
 }
 
 run().catch((e) => {

@@ -1,16 +1,17 @@
 <!-- README: concise developer guide for this project -->
 
-# PDF-tools (Next.js)
+# pdfSwiffter (Next.js)
 
 A collection of PDF utilities built with Next.js (app directory) featuring ARB Payment Gateway integration for premium subscriptions.
 
 ## Features
 
-- **PDF Tools**: Compress, rotate, merge, and split PDF files
-- **Usage Limits**: Free users get 5 uses per tool, tracked by IP + token
+- **pdfSwiffter**: Compress, rotate, merge, and split PDF files
+- **Usage Limits**: Standard users get 3 uses per tool per month, tracked by user/IP + token
 - **Premium Plans**: Unlimited access via ARB Payment Gateway integration
 - **Secure Payments**: AES-256-CBC encrypted payment flow with Al Rajhi Bank
 - **File-based Storage**: Simple JSON databases for usage and order tracking
+- **Tool Policy**: `data/tools-config.json` controls allowed tools, plan limits, and reliability gate settings
 
 ## Quick start
 
@@ -35,14 +36,15 @@ ARB_MERCHANT_ID=your_merchant_id_here
 ARB_PASSWORD=your_password_here
 ARB_API_URL=https://securepayments.alrajhibank.com.sa/pg/payment/hosted.htm
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-your-client-id
-NEXT_PUBLIC_ADSENSE_SLOT_HOME_TOP=0000000000
-NEXT_PUBLIC_ADSENSE_SLOT_HOME_MID=0000000000
-NEXT_PUBLIC_ADSENSE_SLOT_TOOL_PAGE=0000000000
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-6225595378099419
+NEXT_PUBLIC_ADSENSE_SLOT_HOME_TOP=2869688333
+NEXT_PUBLIC_ADSENSE_SLOT_HOME_MID=8418879555
+NEXT_PUBLIC_ADSENSE_SLOT_TOOLS_LIST=3908788909
+NEXT_PUBLIC_ADSENSE_SLOT_TOOL_DETAIL=7683031317
 YOUTUBE_API_BASE_URL=http://localhost:8000
 ```
 
-AdSense ads only render when the client ID and a slot are configured. Set each slot to match the unit IDs you create inside your AdSense account (reusing the same slot across pages is fine).
+AdSense ads only render when the client ID and a slot are configured. Set each slot to match the unit IDs you create inside your AdSense account (reusing the same slot across pages is fine). The project will also read the legacy `NEXT_PUBLIC_ADSENSE_SLOT_TOOL_PAGE` when the new tool list/detail slots are absent.
 
 `YOUTUBE_API_BASE_URL` points to the external service that fetches/merges YouTube videos. During development it defaults to a local instance on port 8000—set it to your production host when deploying.
 

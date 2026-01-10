@@ -1,7 +1,7 @@
 import PaymentResponseClient from "@/features/payment/ui/PaymentResponseClient";
 
 export const metadata = {
-  title: "Payment Verification | PDF Tools",
+  title: "Payment Verification | pdfSwiffter",
   description: "Verifying your payment and activating premium access.",
 };
 

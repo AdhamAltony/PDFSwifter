@@ -1,0 +1,24 @@
+{
+  "plans": {
+    "standard": { "monthlyLimit": 3 },
+    "premium": { "monthlyLimit": null }
+  },
+  "reliability": {
+    "threshold": 0.95,
+    "window": 50,
+    "minRuns": 20
+  },
+  "tools": {
+    "compress-pdf": { "enabled": true, "tier": "freemium" },
+    "rotate-pdf": { "enabled": true, "tier": "freemium" },
+    "pdf-to-excel": { "enabled": true, "tier": "freemium" },
+    "pdf-to-jpg": { "enabled": true, "tier": "premium" },
+    "tiktok-download": { "enabled": true, "tier": "premium" },
+    "youtube-download": { "enabled": true, "tier": "premium" },
+    "pdf-to-word": { "enabled": false, "tier": "premium", "hardDisabled": true }
+  },
+  "overrides": {
+    "forceEnable": [],
+    "forceDisable": []
+  }
+}

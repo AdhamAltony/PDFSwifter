@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export default function UsageLimitModal({ open, onClose, title = 'Usage limit reached', message, upgradeUrl = '/pricing' }) {
+export default function UsageLimitModal({ open, onClose, title = 'Usage limit reached', message, upgradeUrl = '/premium' }) {
   if (!open) return null;
 
   return (
@@ -13,7 +13,10 @@ export default function UsageLimitModal({ open, onClose, title = 'Usage limit re
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="mt-2 text-sm text-gray-600">{message || 'You have reached the free usage limit for this tool. Upgrade to premium to continue using this tool without limits.'}</p>
+            <p className="mt-2 text-sm text-gray-600">
+              {message ||
+                "You have reached the Standard plan limit for this tool (3 uses per month). Upgrade to Premium for unlimited usage."}
+            </p>
           </div>
           <button onClick={onClose} className="ml-4 text-gray-400 hover:text-gray-600">
             <span className="sr-only">Close</span>

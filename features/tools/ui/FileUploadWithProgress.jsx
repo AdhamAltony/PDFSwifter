@@ -1,24 +1,60 @@
 "use client";
-import React, { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import ProgressBar from '@/shared/ui/ProgressBar';
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ProgressBar from "@/shared/ui/ProgressBar";
+import UsageBanner from "@/features/tools/ui/UsageBanner";
+import UsageLimitModal from "@/features/tools/ui/UsageLimitModal";
 
 // Simple file upload component - only handles upload, then redirects to result page
 // Props:
 // - tool: string (tool name like 'rotate-pdf')
 // - accept?: string (file types to accept)
 // - multiple?: boolean (allow multiple files)
-export default function FileUploadWithProgress({ 
-  tool, 
-  accept = '.pdf', 
-  multiple = false 
+export default function FileUploadWithProgress({
+  tool,
+  accept = ".pdf",
+  multiple = false,
 }) {
-  const [state, setState] = useState('idle');
+  const [state, setState] = useState("idle");
   const [progress, setProgress] = useState(0);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileInputRef = useRef(null);
   const router = useRouter();
+  const [usageStatus, setUsageStatus] = useState(null);
+  const [usageLoading, setUsageLoading] = useState(true);
+  const [usageModalOpen, setUsageModalOpen] = useState(false);
+  const [usageInfo, setUsageInfo] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const loadUsage = async () => {
+      setUsageLoading(true);
+      try {
+        const res = await fetch(`/api/tools/${encodeURIComponent(tool)}/usage`, { cache: "no-store" });
+        if (!res.ok) {
+          setUsageStatus(null);
+          return;
+        }
+        const body = await res.json();
+        if (active) {
+          setUsageStatus(body.usage || null);
+        }
+      } catch {
+        if (active) {
+          setUsageStatus(null);
+        }
+      } finally {
+        if (active) {
+          setUsageLoading(false);
+        }
+      }
+    };
+    loadUsage();
+    return () => {
+      active = false;
+    };
+  }, [tool]);
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files || []);
@@ -31,68 +67,82 @@ export default function FileUploadWithProgress({
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
 
-    console.log('Upload function called, files:', selectedFiles);
+    console.log("Upload function called, files:", selectedFiles);
 
     try {
-      console.log('Setting state to uploading...'); 
-      setState('uploading');
+      console.log("Setting state to uploading...");
+      setState("uploading");
       setProgress(0);
 
-      console.log('Starting progress simulation...');
+      console.log("Starting progress simulation...");
       // Simulate upload progress more visibly
       for (let i = 0; i <= 100; i += 5) {
         console.log(`Progress: ${i}%`);
         setProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 50)); // Faster updates
+        await new Promise((resolve) => setTimeout(resolve, 50)); // Faster updates
       }
 
-      console.log('Upload complete, processing file...'); 
+      console.log("Upload complete, processing file...");
       
       // Process file directly without sessionStorage to avoid quota issues
       const file = selectedFiles[0];
-      console.log('Processing file:', file.name, file.size);
+      console.log("Processing file:", file.name, file.size);
       
       // Check file size - if too large, process directly
       const maxSessionStorageSize = 4 * 1024 * 1024; // 4MB limit for sessionStorage
       
       if (file.size > maxSessionStorageSize) {
-        console.log('File too large for sessionStorage, processing directly...');
+        console.log("File too large for sessionStorage, processing directly...");
         
         // For large files, send directly to conversion API
-        setState('converting');
+        setState("converting");
         setProgress(0);
         
         try {
           const formData = new FormData();
-          formData.append('files', file);
-          formData.append('tool', tool);
+          formData.append("files", file);
+          formData.append("tool", tool);
           
           const response = await fetch(`/api/tools/${tool}/fileprocess`, {
-            method: 'POST',
+            method: "POST",
             body: formData,
           });
-          
+
+          if (response.status === 429) {
+            const body = await response.json().catch(() => ({}));
+            setUsageInfo(body);
+            if (body.usage) {
+              setUsageStatus(body.usage);
+            }
+            setUsageModalOpen(true);
+            setState("idle");
+            return;
+          }
+
           const result = await response.json();
           
           if (result.success && result.result?.downloadUrl) {
             setProgress(100);
-            setState('complete');
+            setState("complete");
+            if (result.usage) {
+              setUsageStatus(result.usage);
+            }
             
             // Redirect to success page
             setTimeout(() => {
               const params = new URLSearchParams({
-                status: 'success',
+                status: "success",
                 filename: file.name,
-                url: result.result.downloadUrl
+                url: result.result.downloadUrl,
               });
               router.push(`/result?${params.toString()}`);
             }, 1000);
           } else {
-            throw new Error(result.message || 'Conversion failed');
+            throw new Error(result.message || "Conversion failed");
           }
         } catch (conversionError) {
-          console.error('Direct conversion error:', conversionError);
-          setState('error');
+          console.error("Direct conversion error:", conversionError);
+          setState("error");
           return;
         }
         
@@ -101,11 +151,11 @@ export default function FileUploadWithProgress({
       
       // For smaller files, use sessionStorage approach
       const arrayBuffer = await file.arrayBuffer();
-      console.log('ArrayBuffer created, length:', arrayBuffer.byteLength);
+      console.log("ArrayBuffer created, length:", arrayBuffer.byteLength);
       
       // Convert ArrayBuffer to base64 safely for large files
       const uint8Array = new Uint8Array(arrayBuffer);
-      let binary = '';
+      let binary = "";
       const chunkSize = 8192; // Process in chunks to avoid stack overflow
       
       for (let i = 0; i < uint8Array.length; i += chunkSize) {
@@ -114,11 +164,11 @@ export default function FileUploadWithProgress({
       }
       
       const base64 = btoa(binary);
-      console.log('Base64 conversion complete, length:', base64.length);
+      console.log("Base64 conversion complete, length:", base64.length);
       
       // Try to store in sessionStorage with error handling
       const sessionId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log('Storing in sessionStorage with ID:', sessionId);
+      console.log("Storing in sessionStorage with ID:", sessionId);
       
       try {
         sessionStorage.setItem(sessionId, JSON.stringify({
@@ -126,7 +176,7 @@ export default function FileUploadWithProgress({
           tool: tool,
           data: base64,
           size: file.size,
-          contentType: file.type || 'application/pdf'
+          contentType: file.type || "application/pdf",
         }));
         
         // Redirect to result page with session reference
@@ -134,58 +184,73 @@ export default function FileUploadWithProgress({
         router.push(redirectUrl);
         
       } catch (storageError) {
-        console.warn('SessionStorage failed, falling back to direct processing:', storageError);
+        console.warn("SessionStorage failed, falling back to direct processing:", storageError);
         
         // Fallback to direct processing if sessionStorage fails
-        setState('converting');
+        setState("converting");
         setProgress(0);
         
         const formData = new FormData();
-        formData.append('files', file);
-        formData.append('tool', tool);
+        formData.append("files", file);
+        formData.append("tool", tool);
         
         const response = await fetch(`/api/tools/${tool}/fileprocess`, {
-          method: 'POST',
+          method: "POST",
           body: formData,
         });
-        
+
+        if (response.status === 429) {
+          const body = await response.json().catch(() => ({}));
+          setUsageInfo(body);
+          if (body.usage) {
+            setUsageStatus(body.usage);
+          }
+          setUsageModalOpen(true);
+          setState("idle");
+          return;
+        }
+
         const result = await response.json();
         
         if (result.success && result.result?.downloadUrl) {
           setProgress(100);
-          setState('complete');
+          setState("complete");
+          if (result.usage) {
+            setUsageStatus(result.usage);
+          }
           
           setTimeout(() => {
             const params = new URLSearchParams({
-              status: 'success',
+              status: "success",
               filename: file.name,
-              url: result.result.downloadUrl
+              url: result.result.downloadUrl,
             });
             router.push(`/result?${params.toString()}`);
           }, 1000);
         } else {
-          throw new Error(result.message || 'Conversion failed');
+          throw new Error(result.message || "Conversion failed");
         }
       }
       
     } catch (error) {
-      console.error('Upload error:', error);
-      setState('error');
+      console.error("Upload error:", error);
+      setState("error");
     }
   };
 
   const reset = () => {
-    setState('idle');
+    setState("idle");
     setProgress(0);
-    setFileName('');
+    setFileName("");
     setSelectedFiles([]);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-6">
+      <UsageBanner usage={usageStatus} loading={usageLoading} />
       {/* File input area */}
       <div className="relative">
         <input
@@ -276,6 +341,17 @@ export default function FileUploadWithProgress({
           Test
         </button>
       </div>
+
+      <UsageLimitModal
+        open={usageModalOpen}
+        onClose={() => setUsageModalOpen(false)}
+        title={usageInfo?.title || "Usage limit reached"}
+        message={
+          usageInfo?.message ||
+          "You have reached the Standard plan limit for this tool (3 uses per month). Upgrade to Premium for unlimited usage."
+        }
+        upgradeUrl={usageInfo?.upgradeUrl || "/premium"}
+      />
     </div>
   );
 }

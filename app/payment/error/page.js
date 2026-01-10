@@ -1,7 +1,7 @@
 import PaymentErrorClient from "@/features/payment/ui/PaymentErrorClient";
 
 export const metadata = {
-  title: "Payment Failed | PDF Tools",
+  title: "Payment Failed | pdfSwiffter",
   description: "We could not process your payment. Review common issues and try again.",
 };
 

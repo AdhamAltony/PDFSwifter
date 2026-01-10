@@ -40,7 +40,7 @@ const Hero = ({ query, setQuery }) => {
                 href="#freemium"
                 className="inline-flex items-center rounded-full border border-teal-200 bg-white px-5 py-2 text-sm font-semibold text-teal-700 hover:border-teal-300 hover:text-teal-800"
               >
-                Free essentials
+                Standard essentials
               </Link>
               <Link
                 href="/tools"

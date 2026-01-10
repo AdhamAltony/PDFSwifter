@@ -1,34 +1,40 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import ProgressBar from '@/shared/ui/ProgressBar';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ProgressBar from "@/shared/ui/ProgressBar";
+import UsageBanner from "@/features/tools/ui/UsageBanner";
+import UsageLimitModal from "@/features/tools/ui/UsageLimitModal";
 
 // Component to preview uploaded file and handle conversion
 export default function FilePreviewWithConvert({ filename, base64Data, tool, contentType, sessionId }) {
-  const [convertState, setConvertState] = useState('idle'); // 'idle' | 'converting' | 'complete' | 'error'
+  const [convertState, setConvertState] = useState("idle"); // 'idle' | 'converting' | 'complete' | 'error'
   const [progress, setProgress] = useState(0);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [fileData, setFileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [usageStatus, setUsageStatus] = useState(null);
+  const [usageLoading, setUsageLoading] = useState(true);
+  const [usageModalOpen, setUsageModalOpen] = useState(false);
+  const [usageInfo, setUsageInfo] = useState(null);
 
   // Load data from sessionStorage if sessionId is provided
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       
-      if (sessionId && typeof window !== 'undefined') {
+      if (sessionId && typeof window !== "undefined") {
         try {
           const storedData = sessionStorage.getItem(sessionId);
           if (storedData) {
             const parsedData = JSON.parse(storedData);
             setFileData(parsedData);
           } else {
-            setErrorMessage('Upload session not found. Please upload again.');
+            setErrorMessage("Upload session not found. Please upload again.");
           }
         } catch (error) {
-          console.error('Error loading session data:', error);
-          setErrorMessage('Error loading upload data. Please upload again.');
+          console.error("Error loading session data:", error);
+          setErrorMessage("Error loading upload data. Please upload again.");
         }
       } else if (filename && base64Data && tool) {
         // Direct props approach (fallback)
@@ -36,10 +42,10 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
           filename: filename,
           data: base64Data,
           tool: tool,
-          contentType: contentType || 'application/pdf'
+          contentType: contentType || "application/pdf",
         });
       } else {
-        setErrorMessage('No upload data found. Please upload again.');
+        setErrorMessage("No upload data found. Please upload again.");
       }
       
       setIsLoading(false);
@@ -47,6 +53,37 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
 
     loadData();
   }, [sessionId, filename, base64Data, tool, contentType]);
+
+  useEffect(() => {
+    if (!fileData?.tool) return;
+    let active = true;
+    const loadUsage = async () => {
+      setUsageLoading(true);
+      try {
+        const res = await fetch(`/api/tools/${encodeURIComponent(fileData.tool)}/usage`, { cache: "no-store" });
+        if (!res.ok) {
+          setUsageStatus(null);
+          return;
+        }
+        const body = await res.json();
+        if (active) {
+          setUsageStatus(body.usage || null);
+        }
+      } catch {
+        if (active) {
+          setUsageStatus(null);
+        }
+      } finally {
+        if (active) {
+          setUsageLoading(false);
+        }
+      }
+    };
+    loadUsage();
+    return () => {
+      active = false;
+    };
+  }, [fileData?.tool]);
 
   if (isLoading) {
     return (
@@ -65,10 +102,10 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
           <p className="text-gray-600">
-            {errorMessage || 'Upload data not found.'}
+            {errorMessage || "Upload data not found."}
           </p>
           <button
-            onClick={() => router.push('/tools')}
+            onClick={() => router.push("/tools")}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             Back to Tools
@@ -80,9 +117,9 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
 
   const handleConvert = async () => {
     try {
-      setConvertState('converting');
+      setConvertState("converting");
       setProgress(0);
-      setErrorMessage('');
+      setErrorMessage("");
 
       // Convert base64 back to file for processing
       const binaryString = atob(fileData.data);
@@ -94,37 +131,51 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
       const file = new File([blob], fileData.filename, { type: fileData.contentType });
 
       const formData = new FormData();
-      formData.append('files', file);
-      formData.append('tool', fileData.tool);
+      formData.append("files", file);
+      formData.append("tool", fileData.tool);
 
       // Make conversion request
       const response = await fetch(`/api/tools/${fileData.tool}/fileprocess`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
+
+      if (response.status === 429) {
+        const body = await response.json().catch(() => ({}));
+        setUsageInfo(body);
+        if (body.usage) {
+          setUsageStatus(body.usage);
+        }
+        setUsageModalOpen(true);
+        setConvertState("idle");
+        return;
+      }
 
       const result = await response.json();
       
       if (result.success && result.result?.downloadUrl) {
-        setConvertState('complete');
+        setConvertState("complete");
         setProgress(100);
+        if (result.usage) {
+          setUsageStatus(result.usage);
+        }
         
         // Redirect to success page after brief delay
         setTimeout(() => {
           const params = new URLSearchParams({
-            status: 'success',
+            status: "success",
             filename: fileData.filename,
-            url: result.result.downloadUrl
+            url: result.result.downloadUrl,
           });
           router.push(`/result?${params.toString()}`);
         }, 1000);
       } else {
-        throw new Error(result.message || 'Conversion failed');
+        throw new Error(result.message || "Conversion failed");
       }
     } catch (error) {
-      console.error('Conversion error:', error);
-      setConvertState('error');
-      setErrorMessage(error.message || 'Conversion failed. Please try again.');
+      console.error("Conversion error:", error);
+      setConvertState("error");
+      setErrorMessage(error.message || "Conversion failed. Please try again.");
     }
   };
 
@@ -134,6 +185,9 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
 
   return (
     <section className="mx-auto max-w-4xl px-4 py-10">
+      <div className="mb-6">
+        <UsageBanner usage={usageStatus} loading={usageLoading} />
+      </div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -177,7 +231,7 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
           <div className="rounded-lg border bg-white p-6 shadow-sm">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Ready to Convert</h3>
             
-            {convertState !== 'idle' && (
+            {convertState !== "idle" && (
               <div className="mb-6">
                 <ProgressBar 
                   state={convertState}
@@ -191,15 +245,17 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
             <div className="flex gap-3">
               <button
                 onClick={handleConvert}
-                disabled={convertState === 'converting'}
+                disabled={convertState === "converting"}
                 className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                {convertState === 'converting' ? 'Converting...' : `Convert with ${fileData.tool.replace('-', ' ')}`}
+                {convertState === "converting"
+                  ? "Converting..."
+                  : `Convert with ${fileData.tool.replace("-", " ")}`}
               </button>
               
-              {convertState === 'error' && (
+              {convertState === "error" && (
                 <button
-                  onClick={() => setConvertState('idle')}
+                  onClick={() => setConvertState("idle")}
                   className="px-4 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                 >
                   Retry
@@ -213,7 +269,7 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
         <div className="rounded-lg border bg-white p-6 shadow-sm">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
           
-          {fileData.contentType === 'application/pdf' ? (
+          {fileData.contentType === "application/pdf" ? (
             <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
               <div className="text-6xl mb-4">📄</div>
               <p className="text-gray-600">PDF Preview</p>
@@ -223,7 +279,7 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
               <button
                 onClick={() => {
                   const dataUrl = `data:${fileData.contentType};base64,${fileData.data}`;
-                  window.open(dataUrl, '_blank');
+                  window.open(dataUrl, "_blank");
                 }}
                 className="mt-4 text-sm text-blue-600 hover:underline"
               >
@@ -239,6 +295,17 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
           )}
         </div>
       </div>
+
+      <UsageLimitModal
+        open={usageModalOpen}
+        onClose={() => setUsageModalOpen(false)}
+        title={usageInfo?.title || "Usage limit reached"}
+        message={
+          usageInfo?.message ||
+          "You have reached the Standard plan limit for this tool (3 uses per month). Upgrade to Premium for unlimited usage."
+        }
+        upgradeUrl={usageInfo?.upgradeUrl || "/premium"}
+      />
     </section>
   );
 }
