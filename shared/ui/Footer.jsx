@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const Footer = ({ logoText = "pdfSwiffter" }) => {
+const Footer = ({ logoText = "pdfSwifter" }) => {
   const toolLinks = [
     { name: "Merge PDF", href: "/tools/merge-pdf" },
     { name: "Compress PDF", href: "/tools/compress-pdf" },

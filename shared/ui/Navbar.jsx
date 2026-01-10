@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 
-const Navbar = ({ logoText = "pdfSwiffter" }) => {
+const Navbar = ({ logoText = "pdfSwifter" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
