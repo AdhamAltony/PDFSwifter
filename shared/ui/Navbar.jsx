@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const Navbar = ({ logoText = "pdfSwifter" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [authUser, setAuthUser] = useState(null);
 
   const navLinks = [
     { name: "Tools", href: "/utilities" },
@@ -14,6 +15,47 @@ const Navbar = ({ logoText = "pdfSwifter" }) => {
     { name: "Contact", href: "/contact" },
     { name: "Help", href: "/help" },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await fetch("/api/auth/signout", { method: "POST" });
+    } catch {}
+    setAuthUser(null);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:changed"));
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+    const loadSession = async () => {
+      try {
+        const res = await fetch("/api/auth/session", { cache: "no-store" });
+        if (!res.ok) {
+          if (active) setAuthUser(null);
+          return;
+        }
+        const payload = await res.json();
+        if (active) {
+          setAuthUser(payload?.authenticated ? payload.user : null);
+        }
+      } catch {
+        if (active) setAuthUser(null);
+      }
+    };
+    loadSession();
+    const handler = () => loadSession();
+    window.addEventListener("auth:changed", handler);
+    return () => {
+      active = false;
+      window.removeEventListener("auth:changed", handler);
+    };
+  }, []);
+
+  const userInitial = useMemo(() => {
+    const value = authUser?.username || authUser?.email || "";
+    return value ? value.trim().charAt(0).toUpperCase() : "";
+  }, [authUser]);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/85 backdrop-blur">
@@ -36,18 +78,39 @@ const Navbar = ({ logoText = "pdfSwifter" }) => {
               </Link>
             ))}
 
-            <Link
-              href="/signin"
-              className="px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white hover:border-slate-400 transition duration-150 font-semibold text-sm"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/premium"
-              className="px-4 py-2 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition duration-150 font-semibold text-sm"
-            >
-              Start Premium
-            </Link>
+            {authUser ? (
+              <div className="flex items-center gap-3">
+                <div
+                  className="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold"
+                  aria-label="Signed in user"
+                  title={authUser.username || authUser.email || "Signed in"}
+                >
+                  {userInitial || "?"}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white hover:border-slate-400 transition duration-150 font-semibold text-sm"
+                >
+                  Log out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/signin"
+                  className="px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white hover:border-slate-400 transition duration-150 font-semibold text-sm"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/premium"
+                  className="px-4 py-2 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition duration-150 font-semibold text-sm"
+                >
+                  Start Premium
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex md:hidden">
@@ -87,20 +150,49 @@ const Navbar = ({ logoText = "pdfSwifter" }) => {
             ))}
 
             <div className="pt-4 border-t border-slate-200 flex flex-col space-y-2 px-3">
-              <Link
-                href="/signin"
-                onClick={() => setIsMenuOpen(false)}
-                className="w-full px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white text-center font-semibold text-sm"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/premium"
-                onClick={() => setIsMenuOpen(false)}
-                className="w-full px-4 py-2 rounded-full bg-slate-900 text-white text-center font-semibold text-sm"
-              >
-                Start Premium
-              </Link>
+              {authUser ? (
+                <div className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700">
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold">
+                      {userInitial || "?"}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-slate-900">
+                        {authUser.username || "Signed in"}
+                      </span>
+                      <span className="text-xs text-slate-500">{authUser.email}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  href="/signin"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white text-center font-semibold text-sm"
+                >
+                  Log In
+                </Link>
+              )}
+              {authUser ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSignOut();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-2 rounded-full border border-slate-300 text-slate-900 bg-white text-center font-semibold text-sm"
+                >
+                  Log out
+                </button>
+              ) : (
+                <Link
+                  href="/premium"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full px-4 py-2 rounded-full bg-slate-900 text-white text-center font-semibold text-sm"
+                >
+                  Start Premium
+                </Link>
+              )}
             </div>
           </div>
         </div>

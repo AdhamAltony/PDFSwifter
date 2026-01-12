@@ -1,6 +1,7 @@
 import { getConnection } from '@/lib/db';
 import sql from 'mssql';
 import bcrypt from 'bcryptjs';
+import { createSessionToken, buildSessionCookie } from '@/lib/auth/session';
 
 export async function POST ( req ) {
     try
@@ -28,7 +29,21 @@ export async function POST ( req ) {
             .input( 'id', sql.Int, user.id )
             .query( 'UPDATE Users SET last_login = GETDATE() WHERE id = @id' );
 
-        return new Response( JSON.stringify( { success: true, user: { id: user.id, username: user.username, email: user.email, status: user.status } } ), { status: 200 } );
+        const session = {
+            user: { id: user.id, username: user.username, email: user.email, status: user.status },
+            issuedAt: new Date().toISOString(),
+        };
+        const token = createSessionToken( session );
+        const response = new Response(
+            JSON.stringify( {
+                success: true,
+                message: 'Signed in successfully.',
+                user: session.user,
+            } ),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+        response.headers.set( 'Set-Cookie', buildSessionCookie( { token } ) );
+        return response;
     } catch ( error )
     {
         return new Response( JSON.stringify( { success: false, error: error.message } ), { status: 500 } );

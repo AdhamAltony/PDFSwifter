@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signinSchema } from "@/shared/validation/auth-schemas";
 import { useValidatedForm } from "@/shared/hooks/useValidatedForm";
 import { useAuthAction } from "@/features/auth/hooks/useAuthAction";
 
+const INITIAL_SIGNIN_VALUES = { email: "", password: "", remember: false };
+
 export default function SigninForm() {
   const { form, errors, setField, validate, reset } = useValidatedForm(
-    { email: "", password: "", remember: false },
+    INITIAL_SIGNIN_VALUES,
     signinSchema
   );
   const { submit, submitting, success, formError, setFormError, resetSuccess } = useAuthAction({
     endpoint: "/api/auth/signin",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (success) {
@@ -28,6 +31,7 @@ export default function SigninForm() {
     }
     if (success) {
       resetSuccess();
+      setSuccessMessage("");
     }
     setField(name, type === "checkbox" ? checked : value);
   };
@@ -38,17 +42,26 @@ export default function SigninForm() {
     if (!result.success) {
       return;
     }
-    await submit({
+    const response = await submit({
       email: result.data.email,
       password: result.data.password,
     });
+    if (response?.success) {
+      setSuccessMessage(
+        response.payload?.message ||
+          `Signed in as ${response.payload?.user?.username || response.payload?.user?.email || "user"}.`
+      );
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth:changed"));
+      }
+    }
   };
 
   return (
     <>
       {success && (
         <div className="mt-6 rounded-2xl bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-900">
-          Signed in (demo). Check console for payload.
+          {successMessage || "Signed in successfully."}
         </div>
       )}
 

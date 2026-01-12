@@ -175,11 +175,13 @@ export default function ToolsPageView ( { allowedToolKeys } ) {
                                 Filter by tier, focus on the high-demand utilities, and jump into each task with confidence.
                                 Every tool is reviewed for speed, quality, and success rate.
                             </p>
-                            <div className="mt-8 grid grid-cols-3 gap-4">
+                            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {heroStats.map( ( stat ) => (
-                                    <div key={ stat.label } className="rounded-2xl bg-white/80 p-4 shadow-sm">
+                                    <div key={ stat.label } className="min-w-0 rounded-2xl bg-white/80 p-4 shadow-sm text-center">
                                         <p className="text-2xl font-extrabold text-slate-900">{stat.value}</p>
-                                        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
+                                        <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] leading-snug break-words text-slate-500">
+                                            {stat.label}
+                                        </p>
                                     </div>
                                 ) )}
                             </div>

@@ -78,34 +78,21 @@ export default function UrlToolRunner({ tool }) {
       throw new Error("Missing download endpoint for job.");
     }
 
-    const response = await fetch(endpoint);
-    if (!response.ok) {
-      let errorMessage = `Download failed with status ${response.status}`;
-      try {
-        const data = await response.json();
-        errorMessage = data?.message || errorMessage;
-      } catch {
-        // ignore parse errors
-      }
-      throw new Error(errorMessage);
+    const link = document.createElement("a");
+    link.href = endpoint;
+    if (suggestedFilename || job?.filename) {
+      link.download = suggestedFilename || job?.filename;
     }
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-    const blob = await response.blob();
-    let filename = suggestedFilename || job?.filename || "download";
-    const disposition = response.headers.get("content-disposition");
-    if (disposition) {
-      const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/);
-      const [, utfName, asciiName] = match || [];
-      const decodedName = utfName ? decodeURIComponent(utfName) : asciiName;
-      if (decodedName) {
-        filename = decodedName;
-      }
-    }
-
+  const triggerBlobDownload = (blob, filename) => {
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = filename;
+    link.download = filename || "download";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -127,14 +114,7 @@ export default function UrlToolRunner({ tool }) {
         link.click();
         document.body.removeChild(link);
       } else if (manualDownloadData.type === "blob" && manualDownloadData.blob) {
-        const url = window.URL.createObjectURL(manualDownloadData.blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = manualDownloadData.filename || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        triggerBlobDownload(manualDownloadData.blob, manualDownloadData.filename);
       }
       setMessage("✓ Download started!");
     } catch (error) {
@@ -235,7 +215,7 @@ export default function UrlToolRunner({ tool }) {
         job,
         filename: jobPayload.filename || job?.filename || job?.suggestedFilename,
       });
-      setMessage("✓ Download ready! Click the button below to download.");
+      setMessage("✓ Download ready! Click Download Video to start.");
       return false;
     }
 
@@ -356,7 +336,7 @@ export default function UrlToolRunner({ tool }) {
               downloadUrl: downloadResult.downloadUrl,
               filename: downloadResult.filename || "download",
             });
-            setMessage("✓ Download ready! Click the button below to download.");
+            setMessage("✓ Download ready! Click Download Video to start.");
           } else {
             setMessage("✓ Processing completed successfully!");
           }
@@ -382,7 +362,7 @@ export default function UrlToolRunner({ tool }) {
           filename,
           contentType: response.headers.get("content-type") || "application/octet-stream",
         });
-        setMessage("✓ Download ready! Click the button below to download.");
+        setMessage("✓ Download ready! Click Download Video to start.");
         const usageLimit = response.headers.get("x-usage-limit");
         const usageRemaining = response.headers.get("x-usage-remaining");
         if (usageLimit || usageRemaining) {
@@ -448,14 +428,29 @@ export default function UrlToolRunner({ tool }) {
 
         <div className="flex gap-4">
           <button
-            type="submit"
-            disabled={processing || !url.trim()}
+            type={manualDownloadData ? "button" : "submit"}
+            onClick={manualDownloadData ? handleManualDownload : undefined}
+            disabled={
+              processing ||
+              downloadInProgress ||
+              (!manualDownloadData && !url.trim())
+            }
             className="flex-1 bg-teal-600 text-white py-3 px-6 rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {processing ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                 Processing...
+              </>
+            ) : downloadInProgress ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                Downloading...
+              </>
+            ) : manualDownloadData ? (
+              <>
+                <ArrowDownTrayIcon className="h-5 w-5" />
+                Download Video
               </>
             ) : (
               <>
@@ -500,16 +495,7 @@ export default function UrlToolRunner({ tool }) {
             </p>
             {jobDetail && <p className="text-sm text-gray-500">{jobDetail}</p>}
             {downloadReadyJob && (
-              <div className="mt-4 flex justify-center">
-                <button
-                  type="button"
-                  onClick={handleManualDownload}
-                  disabled={downloadInProgress}
-                  className="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                >
-                  {downloadInProgress ? "Downloading..." : "Download Video"}
-                </button>
-              </div>
+              <p className="text-sm text-gray-500">Download ready.</p>
             )}
           </div>
         )}
@@ -523,18 +509,6 @@ export default function UrlToolRunner({ tool }) {
             }`}
           >
             {message}
-          </div>
-        )}
-        {manualDownloadData && manualDownloadData.type !== "job" && (
-          <div className="mt-4 flex justify-center">
-            <button
-              type="button"
-              onClick={handleManualDownload}
-              disabled={downloadInProgress}
-              className="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-            >
-              {downloadInProgress ? "Downloading..." : "Download Video"}
-            </button>
           </div>
         )}
       </form>

@@ -15,7 +15,7 @@
     "pdf-to-jpg": { "enabled": true, "tier": "premium" },
     "tiktok-download": { "enabled": true, "tier": "premium" },
     "youtube-download": { "enabled": true, "tier": "premium" },
-    "pdf-to-word": { "enabled": false, "tier": "premium", "hardDisabled": true }
+    "pdf-to-word": { "enabled": true, "tier": "premium" }
   },
   "overrides": {
     "forceEnable": [],

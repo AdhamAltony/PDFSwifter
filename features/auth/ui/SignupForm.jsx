@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signupSchema } from "@/shared/validation/auth-schemas";
 import { useValidatedForm } from "@/shared/hooks/useValidatedForm";
 import { useAuthAction } from "@/features/auth/hooks/useAuthAction";
 
+const INITIAL_SIGNUP_VALUES = { name: "", email: "", password: "", confirm: "", accept: false };
+
 export default function SignupForm() {
   const { form, errors, setField, validate, reset } = useValidatedForm(
-    { name: "", email: "", password: "", confirm: "", accept: false },
+    INITIAL_SIGNUP_VALUES,
     signupSchema
   );
   const { submit, submitting, success, formError, setFormError, resetSuccess } = useAuthAction({
     endpoint: "/api/auth/signup",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (success) {
@@ -28,6 +31,7 @@ export default function SignupForm() {
     }
     if (success) {
       resetSuccess();
+      setSuccessMessage("");
     }
     setField(name, type === "checkbox" ? checked : value);
   };
@@ -38,18 +42,21 @@ export default function SignupForm() {
     if (!result.success) {
       return;
     }
-    await submit({
+    const response = await submit({
       username: result.data.name,
       email: result.data.email,
       password: result.data.password,
     });
+    if (response?.success) {
+      setSuccessMessage(response.payload?.message || "Account created successfully.");
+    }
   };
 
   return (
     <>
       {success && (
         <div className="mt-6 rounded-2xl bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-900">
-          Account created (demo). Check console for payload.
+          {successMessage || "Account created successfully. You can sign in now."}
         </div>
       )}
 
