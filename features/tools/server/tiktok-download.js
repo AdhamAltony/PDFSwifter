@@ -4,9 +4,10 @@
 import { env as processEnv } from 'node:process';
 import axios from 'axios';
 
+const env = processEnv || (typeof process !== 'undefined' ? process.env : {}) || {};
 const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
 const REMOTE_API_BASE =
-  (processEnv?.TIKTOK_API_BASE_URL || processEnv?.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
+  (env.TIKTOK_API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
 
 export async function process(files) {
   if (!files || files.length === 0) {

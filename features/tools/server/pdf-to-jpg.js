@@ -6,11 +6,12 @@ import FormData from "form-data";
 import { PDFDocument } from "pdf-lib";
 import { env as processEnv } from "node:process";
 
+const env = processEnv || (typeof process !== "undefined" ? process.env : {}) || {};
 const DEFAULT_API_BASE = "https://api.pdfswifter.com";
 const REMOTE_API_BASE = (
-  processEnv?.PDF_API_BASE_URL ||
-  processEnv?.PDF_CONVERTER_API_BASE_URL ||
-  processEnv?.YOUTUBE_API_BASE_URL ||
+  env.PDF_API_BASE_URL ||
+  env.PDF_CONVERTER_API_BASE_URL ||
+  env.YOUTUBE_API_BASE_URL ||
   DEFAULT_API_BASE
 ).replace(/\/$/, "");
 

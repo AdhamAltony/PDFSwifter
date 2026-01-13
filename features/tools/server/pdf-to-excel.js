@@ -1,9 +1,10 @@
 import axios from 'axios';
 import FormData from 'form-data';
 
+const env = (typeof process !== "undefined" && process.env) ? process.env : {};
 const PDF_API_BASE = (
-  process.env.PDF_CONVERTER_API_BASE_URL ||
-  process.env.PDF_API_BASE_URL ||
+  env.PDF_CONVERTER_API_BASE_URL ||
+  env.PDF_API_BASE_URL ||
   'https://api.pdfswifter.com'
 ).replace(/\/$/, '');
 
