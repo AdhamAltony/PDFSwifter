@@ -4,8 +4,9 @@
 import { env as processEnv } from 'node:process';
 import axios from 'axios';
 
-const DEFAULT_API_BASE = 'http://localhost:8000';
-const YOUTUBE_API_BASE_URL = (processEnv?.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
+const env = processEnv || (typeof process !== 'undefined' ? process.env : {}) || {};
+const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
+const YOUTUBE_API_BASE_URL = (env.API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
 
 export async function process(files, options = {}) {
     if (!files || files.length === 0) {
@@ -26,11 +27,13 @@ export async function process(files, options = {}) {
 
     try {
         const endpoint = `${YOUTUBE_API_BASE_URL}/youtube/download`;
-        const response = await axios.post(endpoint, null, {
-            params: { url: youtubeUrl },
+        const payload = new URLSearchParams();
+        payload.append('url', youtubeUrl);
+        const response = await axios.post(endpoint, payload, {
             timeout: 30000,
             headers: {
                 Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
 

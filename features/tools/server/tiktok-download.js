@@ -7,7 +7,7 @@ import axios from 'axios';
 const env = processEnv || (typeof process !== 'undefined' ? process.env : {}) || {};
 const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
 const REMOTE_API_BASE =
-  (env.TIKTOK_API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
+  (env.API_BASE_URL || env.TIKTOK_API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
 
 export async function process(files) {
   if (!files || files.length === 0) {
@@ -25,25 +25,23 @@ export async function process(files) {
 
   try {
     const endpoint = `${REMOTE_API_BASE}/tiktok/download`;
-    const response = await axios.post(
-      endpoint,
-      null,
-      {
-        params: { url: urlData.url },
-        timeout: 30000,
-        headers: {
-          Accept: 'application/json',
-        },
-      }
-    );
+    const form = new URLSearchParams();
+    form.append('url', urlData.url);
+    const response = await axios.post(endpoint, form, {
+      timeout: 30000,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
 
-    const payload = response.data;
-    if (!payload || !payload.process_id) {
-      throw new Error(payload?.message || 'Download server did not return a process ID');
+    const result = response.data;
+    if (!result || !result.process_id) {
+      throw new Error(result?.message || 'Download server did not return a process ID');
     }
 
-    const jobId = payload.process_id;
-    const message = payload.message || 'Download queued, preparing video...';
+    const jobId = result.process_id;
+    const message = result.message || 'Download queued, preparing video...';
 
     return {
       message,
@@ -51,11 +49,11 @@ export async function process(files) {
       jobType: 'tiktok-download',
       job: {
         id: jobId,
-        status: payload.status || 'pending',
+        status: result.status || 'pending',
         statusUrl: `/api/download-jobs/${jobId}`,
         fileUrl: `/api/download-jobs/${jobId}/file`,
-        suggestedFilename: payload.suggested_name || payload.filename,
-        raw: payload,
+        suggestedFilename: result.suggested_name || result.filename,
+        raw: result,
       },
     };
   } catch (error) {

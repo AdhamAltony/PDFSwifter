@@ -9,6 +9,7 @@ import { env as processEnv } from "node:process";
 const env = processEnv || (typeof process !== "undefined" ? process.env : {}) || {};
 const DEFAULT_API_BASE = "https://api.pdfswifter.com";
 const REMOTE_API_BASE = (
+  env.API_BASE_URL ||
   env.PDF_API_BASE_URL ||
   env.PDF_CONVERTER_API_BASE_URL ||
   env.YOUTUBE_API_BASE_URL ||
@@ -60,18 +61,64 @@ async function convertWithRemoteApi(file, originalName) {
     timeout: 60000,
   });
 
+  const contentTypeHeader = response.headers["content-type"] || "";
+  if (contentTypeHeader.includes("application/json")) {
+    const text = Buffer.from(response.data).toString("utf8");
+    let payload = null;
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = null;
+    }
+    if (payload?.process_id) {
+      return await fetchRemoteJobFile(payload.process_id, originalName);
+    }
+    throw new Error(payload?.error || payload?.message || payload?.detail || text || "Remote conversion error");
+  }
+
   const disposition = response.headers["content-disposition"];
   const filename =
     parseContentDispositionFilename(disposition) ||
     `${originalName.replace(/\.pdf$/i, "")}_images.zip`;
-  const contentType = response.headers["content-type"] || "application/zip";
+  const contentType = contentTypeHeader || "application/zip";
 
   return {
     download: true,
     filename,
-    buffer: Buffer.from(arrayBuffer),
+    buffer: Buffer.from(response.data),
     contentType,
   };
+}
+
+async function fetchRemoteJobFile(processId, originalName) {
+  const statusUrl = `${REMOTE_API_BASE}/downloads/${processId}`;
+  const fileUrl = `${REMOTE_API_BASE}/downloads/${processId}/file`;
+
+  for (let i = 0; i < 30; i += 1) {
+    const statusRes = await axios.get(statusUrl, { timeout: 10000 });
+    const payload = statusRes.data || {};
+    if (payload.status === "failed") {
+      throw new Error(payload.error || "Remote conversion failed");
+    }
+    if (payload.status === "completed" && payload.file_exists) {
+      const res = await axios.get(fileUrl, { responseType: "arraybuffer", timeout: 60000 });
+      const contentType = res.headers["content-type"] || "application/zip";
+      const disposition = res.headers["content-disposition"];
+      const filename =
+        parseContentDispositionFilename(disposition) ||
+        payload.suggested_name ||
+        `${originalName.replace(/\.pdf$/i, "")}_images.zip`;
+      return {
+        download: true,
+        filename,
+        buffer: Buffer.from(res.data),
+        contentType,
+      };
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  throw new Error("Remote conversion did not finish in time.");
 }
 
 async function parseErrorMessage(response) {

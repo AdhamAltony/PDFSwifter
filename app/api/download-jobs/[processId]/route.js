@@ -4,7 +4,7 @@ import { env as processEnv } from 'node:process';
 
 const env = processEnv || (typeof process !== 'undefined' ? process.env : {}) || {};
 const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
-const API_BASE = ( env.TIKTOK_API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
+const API_BASE = ( env.API_BASE_URL || env.TIKTOK_API_BASE_URL || env.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
 const PDF_API_BASE = ( env.PDF_CONVERTER_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
 
 export async function GET ( request, { params } ) {
@@ -37,7 +37,7 @@ export async function GET ( request, { params } ) {
     const job = normalizeJobPayload( body );
     job.id = processId;
 
-    job.type = isPdfProcess ? 'pdf-conversion' : 'youtube-download';
+    job.type = isPdfProcess ? 'pdf-conversion' : body?.source || 'download';
 
     return Response.json( { success: true, job, raw: body }, { status: 200 } );
   } catch ( error )

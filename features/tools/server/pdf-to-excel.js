@@ -3,6 +3,7 @@ import FormData from 'form-data';
 
 const env = (typeof process !== "undefined" && process.env) ? process.env : {};
 const PDF_API_BASE = (
+  env.API_BASE_URL ||
   env.PDF_CONVERTER_API_BASE_URL ||
   env.PDF_API_BASE_URL ||
   'https://api.pdfswifter.com'
@@ -37,7 +38,18 @@ export async function process ( files, options = {} ) {
     }
   );
 
-  const contentType = response.headers[ 'content-type' ] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const contentType = response.headers[ 'content-type' ] || '';
+  if (contentType.includes('application/json')) {
+    const text = Buffer.from(response.data).toString('utf8');
+    let payload = null;
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = null;
+    }
+    throw new Error(payload?.error || payload?.message || payload?.detail || text || 'Conversion failed');
+  }
+  const finalContentType = contentType || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   const disposition = response.headers[ 'content-disposition' ] || '';
   const filenameMatch = disposition.match( /filename=\"?([^\";]+)\"?/i );
   const filename = filenameMatch ? filenameMatch[ 1 ] : originalName.replace( /\.pdf$/i, '' ) + '.xlsx';
@@ -47,7 +59,7 @@ export async function process ( files, options = {} ) {
     message: 'Conversion completed',
     download: true,
     filename,
-    contentType,
+    contentType: finalContentType,
     buffer: Buffer.from( response.data ),
   };
 }
