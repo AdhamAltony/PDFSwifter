@@ -27,9 +27,9 @@ export async function process(files, options = {}) {
 
     try {
         const endpoint = `${YOUTUBE_API_BASE_URL}/youtube/download`;
-        const payload = new URLSearchParams();
-        payload.append('url', youtubeUrl);
-        const response = await axios.post(endpoint, payload, {
+        const form = new URLSearchParams();
+        form.append('url', youtubeUrl);
+        const response = await axios.post(endpoint, form, {
             timeout: 30000,
             headers: {
                 Accept: 'application/json',
@@ -37,13 +37,13 @@ export async function process(files, options = {}) {
             },
         });
 
-        const payload = response?.data;
-        if (!payload || !payload.process_id) {
-            throw new Error(payload?.message || 'Download server did not return a process ID');
+        const result = response?.data;
+        if (!result || !result.process_id) {
+            throw new Error(result?.message || 'Download server did not return a process ID');
         }
 
-        const jobId = payload.process_id;
-        const message = payload.message || 'Download queued, preparing video...';
+        const jobId = result.process_id;
+        const message = result.message || 'Download queued, preparing video...';
 
         return {
             message,
@@ -51,11 +51,11 @@ export async function process(files, options = {}) {
             jobType: 'youtube-download',
             job: {
                 id: jobId,
-                status: payload.status || 'pending',
+                status: result.status || 'pending',
                 statusUrl: `/api/download-jobs/${jobId}`,
                 fileUrl: `/api/download-jobs/${jobId}/file`,
-                suggestedFilename: payload.suggested_name,
-                raw: payload,
+                suggestedFilename: result.suggested_name,
+                raw: result,
             },
         };
 
