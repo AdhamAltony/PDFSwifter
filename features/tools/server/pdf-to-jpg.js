@@ -2,12 +2,14 @@
 // PDF to JPG (image) processor that delegates to the shared PDF conversion API when available.
 
 import axios from "axios";
+import FormData from "form-data";
 import { PDFDocument } from "pdf-lib";
 import { env as processEnv } from "node:process";
 
-const DEFAULT_API_BASE = "http://localhost:8000";
+const DEFAULT_API_BASE = "https://api.pdfswifter.com";
 const REMOTE_API_BASE = (
   processEnv?.PDF_API_BASE_URL ||
+  processEnv?.PDF_CONVERTER_API_BASE_URL ||
   processEnv?.YOUTUBE_API_BASE_URL ||
   DEFAULT_API_BASE
 ).replace(/\/$/, "");
@@ -46,30 +48,22 @@ export async function process(files, options = {}) {
 async function convertWithRemoteApi(file, originalName) {
   const endpoint = `${REMOTE_API_BASE}/pdf/to-image`;
   const formData = new FormData();
-  const pdfBlob = file.buffer instanceof Blob
-    ? file.buffer
-    : new Blob([file.buffer], { type: "application/pdf" });
-  formData.append("file", pdfBlob, originalName);
+  formData.append("file", file.buffer, { filename: originalName, contentType: file.type || "application/pdf" });
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    body: formData,
+  const response = await axios.post(endpoint, formData, {
+    responseType: "arraybuffer",
     headers: {
+      ...formData.getHeaders(),
       Accept: "application/zip, application/octet-stream, */*",
     },
+    timeout: 60000,
   });
 
-  if (!response.ok) {
-    const message = await parseErrorMessage(response);
-    throw new Error(message || `Remote conversion error (${response.status})`);
-  }
-
-  const arrayBuffer = await response.arrayBuffer();
-  const disposition = response.headers.get("content-disposition");
+  const disposition = response.headers["content-disposition"];
   const filename =
     parseContentDispositionFilename(disposition) ||
     `${originalName.replace(/\.pdf$/i, "")}_images.zip`;
-  const contentType = response.headers.get("content-type") || "application/zip";
+  const contentType = response.headers["content-type"] || "application/zip";
 
   return {
     download: true,

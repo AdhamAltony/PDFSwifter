@@ -15,6 +15,8 @@ export default function ToolRunner({ tool }) {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
+  const [angle, setAngle] = useState("90");
+  const showAngleInput = tool === "rotate-pdf";
   const inputRef = useRef(null);
   const [usageStatus, setUsageStatus] = useState(null);
   const [usageLoading, setUsageLoading] = useState(true);
@@ -116,6 +118,14 @@ export default function ToolRunner({ tool }) {
       return;
     }
 
+    if (showAngleInput) {
+      const deg = Number(angle);
+      if (!Number.isFinite(deg)) {
+        setMessage("Please enter a rotation angle (e.g., 90).");
+        return;
+      }
+    }
+
     setUploading(true);
     setMessage("Uploading...");
 
@@ -125,6 +135,9 @@ export default function ToolRunner({ tool }) {
 
       // POST to the new fileprocess endpoint and include tool in the form data
       fd.append('tool', tool);
+      if (showAngleInput) {
+        fd.append("angle", String(angle));
+      }
 
       const res = await fetch(`/api/utilities/${encodeURIComponent(tool)}/fileprocess`, {
         method: 'POST',
@@ -229,6 +242,28 @@ export default function ToolRunner({ tool }) {
       </div>
 
       <UsageBanner usage={usageStatus} loading={usageLoading} />
+
+      {showAngleInput && (
+        <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Rotation angle</p>
+              <p className="text-xs text-gray-500">Enter degrees to rotate (e.g., 90, 180, 270).</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={angle}
+                onChange={(e) => setAngle(e.target.value)}
+                className="w-28 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                placeholder="90"
+                aria-label="Rotation angle in degrees"
+              />
+              <span className="text-sm text-gray-600">deg</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Drag & Drop */}
       <div

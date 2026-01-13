@@ -16,7 +16,10 @@ import { PDFDocument, degrees } from 'pdf-lib';
  *   can decide how to persist or bundle results (e.g., ZIP).
  */
 export async function process(files = [], options = {}) {
-  const angle = Number(options.angle || 90); // default 90 degrees
+  const angle = Number(options.angle);
+  if (!Number.isFinite(angle)) {
+    throw new Error("Rotation angle is required (e.g., 90).");
+  }
 
   const results = [];
   for (const f of files) {
