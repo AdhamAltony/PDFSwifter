@@ -28,6 +28,7 @@ export async function process(files) {
     const form = new URLSearchParams();
     form.append('url', urlData.url);
     const response = await axios.post(endpoint, form, {
+      params: { url: urlData.url },
       timeout: 30000,
       headers: {
         Accept: 'application/json',
