@@ -2,8 +2,8 @@ export const runtime = 'nodejs';
 
 import { env as processEnv } from 'node:process';
 
-const DEFAULT_API_BASE = 'http://localhost:8000';
-const API_BASE = ( processEnv?.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
+const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
+const API_BASE = ( processEnv?.TIKTOK_API_BASE_URL || processEnv?.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
 const PDF_API_BASE = ( processEnv?.PDF_CONVERTER_API_BASE_URL || DEFAULT_API_BASE ).replace( /\/$/, '' );
 
 export async function GET ( request, { params } ) {

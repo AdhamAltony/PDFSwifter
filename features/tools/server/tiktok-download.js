@@ -4,7 +4,7 @@
 import { env as processEnv } from 'node:process';
 import axios from 'axios';
 
-const DEFAULT_API_BASE = 'http://localhost:8000';
+const DEFAULT_API_BASE = 'https://api.pdfswifter.com';
 const REMOTE_API_BASE =
   (processEnv?.TIKTOK_API_BASE_URL || processEnv?.YOUTUBE_API_BASE_URL || DEFAULT_API_BASE).replace(/\/$/, '');
 
@@ -62,6 +62,10 @@ export async function process(files) {
 
     if (error.code === 'ECONNABORTED') {
       throw new Error('Download timeout - video may be too large or the server took too long to respond');
+    }
+
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('Download service unavailable. Start the downloader on port 8000 or set TIKTOK_API_BASE_URL to your running instance.');
     }
 
     if (error.response) {
