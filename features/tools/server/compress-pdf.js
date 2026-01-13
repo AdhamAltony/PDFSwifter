@@ -33,6 +33,10 @@ export async function process(files, options = {}) {
   );
 
   const contentType = response.headers['content-type'] || 'application/pdf';
+  if (contentType.includes('application/json') || contentType.startsWith('text/')) {
+    const text = Buffer.from(response.data).toString('utf8');
+    throw new Error(text || 'Compression failed');
+  }
   const disposition = response.headers['content-disposition'] || '';
   const filenameMatch = disposition.match(/filename=\"?([^\";]+)\"?/i);
   const filename = filenameMatch ? filenameMatch[1] : originalName.replace(/\.pdf$/i, '') + '-compressed.pdf';

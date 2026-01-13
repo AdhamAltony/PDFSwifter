@@ -302,7 +302,7 @@ export default function FileUploadWithProgress({
       <div className="flex gap-3">
         <button
           onClick={() => { uploadFiles(); }}
-          disabled={selectedFiles.length === 0 || state === 'uploading' || state === 'converting'}
+          disabled={selectedFiles.length === 0 || state !== 'idle'}
           className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {state === 'uploading' ? 'Uploading...' : state === 'converting' ? 'Converting...' : 'Upload File'}

@@ -19,12 +19,15 @@ export default function FileUploadWithProgress({
   const [progress, setProgress] = useState(0);
   const [fileName, setFileName] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [angle, setAngle] = useState("90");
+  const showAngleInput = tool === "rotate-pdf";
   const fileInputRef = useRef(null);
   const router = useRouter();
   const [usageStatus, setUsageStatus] = useState(null);
   const [usageLoading, setUsageLoading] = useState(true);
   const [usageModalOpen, setUsageModalOpen] = useState(false);
   const [usageInfo, setUsageInfo] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -66,34 +69,33 @@ export default function FileUploadWithProgress({
 
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
-
-    console.log("Upload function called, files:", selectedFiles);
+    setErrorMessage("");
+    if (showAngleInput) {
+      const deg = Number(angle);
+      if (!Number.isFinite(deg)) {
+        setState("error");
+        setErrorMessage("Please enter a rotation angle (e.g., 90).");
+        return;
+      }
+    }
 
     try {
-      console.log("Setting state to uploading...");
       setState("uploading");
       setProgress(0);
 
-      console.log("Starting progress simulation...");
       // Simulate upload progress more visibly
       for (let i = 0; i <= 100; i += 5) {
-        console.log(`Progress: ${i}%`);
         setProgress(i);
         await new Promise((resolve) => setTimeout(resolve, 50)); // Faster updates
       }
 
-      console.log("Upload complete, processing file...");
-      
       // Process file directly without sessionStorage to avoid quota issues
       const file = selectedFiles[0];
-      console.log("Processing file:", file.name, file.size);
       
       // Check file size - if too large, process directly
       const maxSessionStorageSize = 4 * 1024 * 1024; // 4MB limit for sessionStorage
       
       if (file.size > maxSessionStorageSize) {
-        console.log("File too large for sessionStorage, processing directly...");
-        
         // For large files, send directly to conversion API
         setState("converting");
         setProgress(0);
@@ -102,6 +104,9 @@ export default function FileUploadWithProgress({
           const formData = new FormData();
           formData.append("files", file);
           formData.append("tool", tool);
+          if (showAngleInput) {
+            formData.append("angle", String(angle));
+          }
           
           const response = await fetch(`/api/utilities/${tool}/fileprocess`, {
             method: "POST",
@@ -151,7 +156,6 @@ export default function FileUploadWithProgress({
       
       // For smaller files, use sessionStorage approach
       const arrayBuffer = await file.arrayBuffer();
-      console.log("ArrayBuffer created, length:", arrayBuffer.byteLength);
       
       // Convert ArrayBuffer to base64 safely for large files
       const uint8Array = new Uint8Array(arrayBuffer);
@@ -164,11 +168,9 @@ export default function FileUploadWithProgress({
       }
       
       const base64 = btoa(binary);
-      console.log("Base64 conversion complete, length:", base64.length);
       
       // Try to store in sessionStorage with error handling
       const sessionId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log("Storing in sessionStorage with ID:", sessionId);
       
       try {
         sessionStorage.setItem(sessionId, JSON.stringify({
@@ -177,6 +179,7 @@ export default function FileUploadWithProgress({
           data: base64,
           size: file.size,
           contentType: file.type || "application/pdf",
+          angle: showAngleInput ? Number(angle) : undefined,
         }));
         
         // Redirect to result page with session reference
@@ -193,6 +196,9 @@ export default function FileUploadWithProgress({
         const formData = new FormData();
         formData.append("files", file);
         formData.append("tool", tool);
+        if (showAngleInput) {
+          formData.append("angle", String(angle));
+        }
         
         const response = await fetch(`/api/utilities/${tool}/fileprocess`, {
           method: "POST",
@@ -235,6 +241,7 @@ export default function FileUploadWithProgress({
     } catch (error) {
       console.error("Upload error:", error);
       setState("error");
+      setErrorMessage("Upload failed. Please try again.");
     }
   };
 
@@ -243,6 +250,7 @@ export default function FileUploadWithProgress({
     setProgress(0);
     setFileName("");
     setSelectedFiles([]);
+    setErrorMessage("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -251,6 +259,27 @@ export default function FileUploadWithProgress({
   return (
     <div className="w-full max-w-lg mx-auto space-y-6">
       <UsageBanner usage={usageStatus} loading={usageLoading} />
+      {showAngleInput && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Rotation angle</p>
+              <p className="text-xs text-gray-500">Enter degrees to rotate (e.g., 90, 180, 270).</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={angle}
+                onChange={(e) => setAngle(e.target.value)}
+                className="w-24 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                placeholder="90"
+                aria-label="Rotation angle in degrees"
+              />
+              <span className="text-sm text-gray-600">deg</span>
+            </div>
+          </div>
+        </div>
+      )}
       {/* File input area */}
       <div className="relative">
         <input
@@ -259,14 +288,14 @@ export default function FileUploadWithProgress({
           accept={accept}
           multiple={multiple}
           onChange={handleFileSelect}
-          disabled={state === 'uploading'}
+          disabled={state !== 'idle'}
           className="hidden"
           id="file-input"
         />
         <label
           htmlFor="file-input"
           className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-            state === 'uploading'
+            state !== 'idle'
               ? 'border-blue-400 bg-blue-50 cursor-not-allowed'
               : selectedFiles.length > 0
               ? 'border-green-400 bg-green-50 hover:bg-green-100'
@@ -311,10 +340,9 @@ export default function FileUploadWithProgress({
       <div className="flex gap-3">
         <button
           onClick={() => {
-            console.log('Button clicked! State:', state, 'Files:', selectedFiles.length);
             uploadFiles();
           }}
-          disabled={selectedFiles.length === 0 || state === 'uploading' || state === 'converting'}
+          disabled={selectedFiles.length === 0 || state !== 'idle'}
           className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {state === 'uploading' ? 'Uploading...' : state === 'converting' ? 'Converting...' : 'Upload File'}
@@ -328,19 +356,11 @@ export default function FileUploadWithProgress({
             Try Again
           </button>
         )}
-        
-        {/* Debug button */}
-        <button
-          onClick={() => {
-            console.log('Debug - Current state:', { state, progress, fileName, selectedFiles });
-            setState('uploading');
-            setProgress(50);
-          }}
-          className="px-3 py-2 bg-gray-200 text-gray-700 rounded text-xs"
-        >
-          Test
-        </button>
       </div>
+
+      {errorMessage && (
+        <div className="text-sm text-red-600">{errorMessage}</div>
+      )}
 
       <UsageLimitModal
         open={usageModalOpen}
