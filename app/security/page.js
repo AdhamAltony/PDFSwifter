@@ -2,8 +2,8 @@ import React from 'react';
 import ContentPage from '@/features/content/ui/ContentPage';
 
 export const metadata = {
-  title: 'Security | pdfSwiffter',
-  description: 'Security practices and data handling at pdfSwiffter.',
+  title: 'Security | pdfSwifter',
+  description: 'Security practices and data handling at pdfSwifter.',
 };
 
 export default function SecurityPage() {

@@ -1,7 +1,7 @@
 import React from "react";
 
 // Server Component - Premium-styled layout for content pages
-export default function ContentPage({ title, intro, children, eyebrow = "pdfSwiffter" }) {
+export default function ContentPage({ title, intro, children, eyebrow = "pdfSwifter" }) {
   return (
     <div
       className="min-h-screen bg-[#f6f4ef] text-slate-900 font-[var(--font-body)]"

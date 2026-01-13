@@ -3,8 +3,8 @@ import Footer from "@/shared/ui/Footer";
 import { blogPosts } from "@/data/blogPosts";
 
 export const metadata = {
-  title: "Insights & updates | pdfSwiffter",
-  description: "News, product thinking, and behind-the-scenes notes from the pdfSwiffter team.",
+  title: "Insights & updates | pdfSwifter",
+  description: "News, product thinking, and behind-the-scenes notes from the pdfSwifter team.",
 };
 
 const formatDate = (value) =>
@@ -47,7 +47,7 @@ export default function BlogPage() {
             Insights
           </span>
           <h1 className="mt-6 text-4xl font-extrabold leading-tight md:text-5xl font-[var(--font-display)]">
-            pdfSwiffter journal
+            pdfSwifter journal
           </h1>
           <p className="mt-4 max-w-2xl text-base text-slate-700 md:text-lg">
             Product thinking, reliability notes, and workflows from the team building the toolkit.

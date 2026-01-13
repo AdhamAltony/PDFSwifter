@@ -3,8 +3,8 @@ import Link from "next/link";
 import Footer from "@/shared/ui/Footer";
 
 export const metadata = {
-  title: "Help Center | pdfSwiffter",
-  description: "FAQs and support resources for pdfSwiffter.",
+  title: "Help Center | pdfSwifter",
+  description: "FAQs and support resources for pdfSwifter.",
 };
 
 const faqs = [

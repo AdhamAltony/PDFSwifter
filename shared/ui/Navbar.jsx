@@ -1,8 +1,9 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 
-const Navbar = ({ logoText = "pdfSwifter" }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [authUser, setAuthUser] = useState(null);
 
@@ -62,8 +63,15 @@ const Navbar = ({ logoText = "pdfSwifter" }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="shrink-0">
-            <Link href="/" className="text-2xl font-bold text-slate-900 hover:text-slate-700">
-              {logoText}
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/pdf-swifter-logo.png"
+                alt="pdfSwifter"
+                width={256}
+                height={256}
+                className="h-32 w-32 rounded-2xl object-contain"
+                priority
+              />
             </Link>
           </div>
 

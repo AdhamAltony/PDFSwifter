@@ -5,7 +5,7 @@ import { ALL_TOOLS } from "@/features/utilities/constants/tools";
 import { getAllowedToolKeys } from "@/lib/utilities/tools-policy";
 
 export const metadata = {
-  title: "Premium plan | pdfSwiffter",
+  title: "Premium plan | pdfSwifter",
   description:
     "Upgrade to Premium for unlimited conversions, priority processing, and advanced helpers.",
 };

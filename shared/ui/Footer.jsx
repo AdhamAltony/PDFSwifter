@@ -1,6 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 
-const Footer = ({ logoText = "pdfSwifter" }) => {
+const BRAND_NAME = "pdfSwifter";
+
+const Footer = () => {
   const toolLinks = [
     { name: "Merge PDF", href: "/tools/merge-pdf" },
     { name: "Compress PDF", href: "/tools/compress-pdf" },
@@ -27,7 +30,16 @@ const Footer = ({ logoText = "pdfSwifter" }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <h3 className="text-3xl font-bold text-teal-700 mb-4">{logoText}</h3>
+            <Link href="/" className="inline-flex items-center mb-6">
+              <Image
+                src="/pdf-swifter-logo.png"
+                alt="pdfSwifter"
+                width={128}
+                height={128}
+                className="h-24 w-24 rounded-2xl object-contain"
+                priority
+              />
+            </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
               Your centralized hub for secure, fast, and free PDF management. Built for efficiency.
             </p>
@@ -76,7 +88,7 @@ const Footer = ({ logoText = "pdfSwifter" }) => {
 
         <div className="mt-12 pt-6 border-t border-gray-200">
           <p className="text-center text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} {logoText}. All rights reserved.{" "}
+            &copy; {new Date().getFullYear()} {BRAND_NAME}. All rights reserved.{" "}
             <span className="ml-2 hidden sm:inline">| Built with security and speed in mind.</span>
           </p>
         </div>

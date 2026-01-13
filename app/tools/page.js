@@ -2,9 +2,9 @@ import ToolsPageView from "@/features/utilities/ui/ToolsPageView";
 import { getAllowedToolKeys } from "@/lib/utilities/tools-policy";
 
 export const metadata = {
-    title: "All tools | pdfSwiffter",
+    title: "All tools | pdfSwifter",
     description:
-        "Browse every pdfSwiffter tool by tier and category. Convert, compress, rotate, and download with a clean workflow.",
+        "Browse every pdfSwifter tool by tier and category. Convert, compress, rotate, and download with a clean workflow.",
 };
 export const dynamic = "force-dynamic";
 

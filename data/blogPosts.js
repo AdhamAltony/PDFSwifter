@@ -6,7 +6,7 @@ export const blogPosts = [
       "We break every workflow down into a single focused action so the tool you need loads faster and behaves more reliably.",
     publishedAt: "2024-11-12",
     category: "Product & Design",
-    author: "The pdfSwiffter Team",
+    author: "The pdfSwifter Team",
     tags: ["speed", "ux"],
     content: [
       "Every millisecond counts when someone is waiting for a conversion or download. We invested early in splitting the product into focused tools so each one can be optimized independently for performance, accessibility, and reliability.",
@@ -18,7 +18,7 @@ export const blogPosts = [
     slug: "private-by-default",
     title: "Private by default: Keeping your PDFs safe",
     summary:
-      "pdfSwiffter never keeps unnecessary copies of your data. We show what we touch and delete everything else right after the job finishes.",
+      "pdfSwifter never keeps unnecessary copies of your data. We show what we touch and delete everything else right after the job finishes.",
     publishedAt: "2024-09-30",
     category: "Security",
     author: "Security & Ops",
@@ -33,7 +33,7 @@ export const blogPosts = [
     slug: "premium-next-steps",
     title: "What premium subscribers get beyond fast conversions",
     summary:
-      "The Premium plan is designed for people who rely on pdfSwiffter daily—unlimited runs, priority processing, and exclusive helpers.",
+      "The Premium plan is designed for people who rely on pdfSwifter daily—unlimited runs, priority processing, and exclusive helpers.",
     publishedAt: "2024-08-05",
     category: "Business",
     author: "Growth & Partnerships",

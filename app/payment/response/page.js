@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import PaymentResponseClient from "@/features/payment/ui/PaymentResponseClient";
 
 export const metadata = {
-  title: "Payment Verification | pdfSwiffter",
+  title: "Payment Verification | pdfSwifter",
   description: "Verifying your payment and activating premium access.",
 };
 

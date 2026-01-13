@@ -2,20 +2,20 @@ import React from 'react';
 import ContentPage from '@/features/content/ui/ContentPage';
 
 export const metadata = {
-  title: 'Terms of Use | pdfSwiffter',
-  description: 'Terms and conditions for using pdfSwiffter.',
+  title: 'Terms of Use | pdfSwifter',
+  description: 'Terms and conditions for using pdfSwifter.',
 };
 
 export default function TermsPage() {
   return (
     <ContentPage
       title="Terms of Use"
-      intro="By using pdfSwiffter, you agree to the following terms and acceptable use policies."
+      intro="By using pdfSwifter, you agree to the following terms and acceptable use policies."
     >
       <div className="bg-amber-50 border-l-4 border-amber-300 p-6 mb-8">
         <h3 className="text-lg font-semibold text-amber-800 mb-2">Important Notice</h3>
         <p className="text-amber-700">
-          By using pdfSwiffter, you agree to these terms. Please read them carefully before using our services.
+          By using pdfSwifter, you agree to these terms. Please read them carefully before using our services.
         </p>
       </div>
 
@@ -43,7 +43,7 @@ export default function TermsPage() {
 
       <h2>Intellectual property</h2>
       <p>
-        pdfSwiffter and associated content are protected by applicable intellectual property laws. You retain ownership of your files.
+        pdfSwifter and associated content are protected by applicable intellectual property laws. You retain ownership of your files.
       </p>
 
       <h2>Limitation of liability</h2>

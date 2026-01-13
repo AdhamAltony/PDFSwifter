@@ -6,8 +6,13 @@ import Navbar from "@/shared/ui/Navbar";
 const adsenseClient =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-6225595378099419";
 export const metadata = {
-  title: "pdfSwiffter",
+  title: "pdfSwifter",
   description: "Premium-first PDF toolkit for fast conversions, compression, and downloads.",
+  icons: {
+    icon: "/favicone.png",
+    shortcut: "/favicone.png",
+    apple: "/favicone.png",
+  },
 };
 
 export default function RootLayout({ children }) {

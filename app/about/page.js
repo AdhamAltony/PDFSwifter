@@ -13,7 +13,7 @@ export default function About() {
     {
       name: "Lina Hassan",
       role: "Product Designer",
-      bio: "Designs focused interfaces and guides the visual language of pdfSwiffter.",
+      bio: "Designs focused interfaces and guides the visual language of pdfSwifter.",
       twitter: "https://twitter.com",
     },
     {
@@ -62,7 +62,7 @@ export default function About() {
           <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <span className="inline-flex items-center rounded-full border border-amber-200 bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.35em] text-amber-800">
-                About pdfSwiffter
+                About pdfSwifter
               </span>
               <h1 className="mt-6 text-4xl font-extrabold leading-tight md:text-5xl font-[var(--font-display)]">
                 Focused utilities for the way teams really work.
@@ -87,7 +87,7 @@ export default function About() {
                 Keep workflows calm, not chaotic.
               </h2>
               <p className="mt-3 text-sm text-slate-600">
-                pdfSwiffter is designed for clarity. You get fast conversions, trustworthy outputs, and a roadmap driven
+                pdfSwifter is designed for clarity. You get fast conversions, trustworthy outputs, and a roadmap driven
                 by the workflows people run every week.
               </p>
               <div className="mt-6 space-y-3 text-sm text-slate-700">

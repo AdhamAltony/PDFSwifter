@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import PaymentErrorClient from "@/features/payment/ui/PaymentErrorClient";
 
 export const metadata = {
-  title: "Payment Failed | pdfSwiffter",
+  title: "Payment Failed | pdfSwifter",
   description: "We could not process your payment. Review common issues and try again.",
 };
 

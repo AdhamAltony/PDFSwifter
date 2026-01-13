@@ -1,12 +1,12 @@
 <!-- README: concise developer guide for this project -->
 
-# pdfSwiffter (Next.js)
+# pdfSwifter (Next.js)
 
 A collection of PDF utilities built with Next.js (app directory) featuring ARB Payment Gateway integration for premium subscriptions.
 
 ## Features
 
-- **pdfSwiffter**: Compress, rotate, merge, and split PDF files
+- **pdfSwifter**: Compress, rotate, merge, and split PDF files
 - **Usage Limits**: Standard users get 3 uses per tool per month, tracked by user/IP + token
 - **Premium Plans**: Unlimited access via ARB Payment Gateway integration
 - **Secure Payments**: AES-256-CBC encrypted payment flow with Al Rajhi Bank

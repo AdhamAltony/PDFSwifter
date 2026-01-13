@@ -1,7 +1,7 @@
 import PricingPageClient from "@/features/pricing/ui/PricingPageClient";
 
 export const metadata = {
-  title: "Pricing | pdfSwiffter",
+  title: "Pricing | pdfSwifter",
   description: "Choose a plan that fits your workflow. Unlock premium tools and higher limits.",
 };
 

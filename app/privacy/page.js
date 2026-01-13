@@ -2,8 +2,8 @@ import React from 'react';
 import ContentPage from '@/features/content/ui/ContentPage';
 
 export const metadata = {
-  title: 'Privacy Policy | pdfSwiffter',
-  description: 'How pdfSwiffter collects, uses, and protects your data.',
+  title: 'Privacy Policy | pdfSwifter',
+  description: 'How pdfSwifter collects, uses, and protects your data.',
 };
 
 export default function PrivacyPage() {

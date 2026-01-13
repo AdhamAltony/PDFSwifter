@@ -10,7 +10,7 @@ const HERO_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_TOP;
 const MIDPAGE_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_MID;
 
 export const metadata = {
-  title: "pdfSwiffter | Fast conversions and downloads",
+  title: "pdfSwifter | Fast conversions and downloads",
   description:
     "Premium-first PDF toolkit for conversions, compression, and video downloads. Find the right tool in seconds.",
 };

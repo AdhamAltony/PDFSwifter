@@ -13,21 +13,21 @@ export async function generateMetadata({ params }) {
   const post = blogPosts.find((entry) => entry.slug === params.slug);
   if (!post) {
     return {
-      title: "Blog post not found | pdfSwiffter",
+      title: "Blog post not found | pdfSwifter",
     };
   }
 
   return {
-    title: `${post.title} | pdfSwiffter`,
+    title: `${post.title} | pdfSwifter`,
     description: post.summary,
     openGraph: {
-      title: `${post.title} | pdfSwiffter`,
+      title: `${post.title} | pdfSwifter`,
       description: post.summary,
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${post.title} | pdfSwiffter`,
+      title: `${post.title} | pdfSwifter`,
       description: post.summary,
     },
   };
