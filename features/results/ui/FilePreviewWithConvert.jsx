@@ -9,6 +9,7 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
   const [message, setMessage] = useState("");
   const [payload, setPayload] = useState({ filename, base64Data, tool, contentType, angle: undefined });
   const [hydrating, setHydrating] = useState(Boolean(sessionId));
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   // Hydrate from sessionStorage when a sessionId is provided (client-side only).
   useEffect(() => {
@@ -76,10 +77,11 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.success) {
         setStatus("done");
-        setMessage("Conversion queued");
         if (body.result?.downloadUrl) {
-          // redirect to result if provided
-          router.push(body.result.downloadUrl);
+          setDownloadUrl(body.result.downloadUrl);
+          setMessage("Conversion complete. Your file is ready.");
+        } else {
+          setMessage("Conversion queued");
         }
       } else if (res.status === 429) {
         setStatus("blocked");
@@ -118,11 +120,19 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
     <div className="p-6 bg-white rounded shadow">
       <h3 className="font-semibold mb-2">Preview & Convert</h3>
       <p className="text-sm text-gray-600">{displayName}</p>
-      <div className="mt-4 flex gap-3">
+      <div className="mt-4 flex flex-wrap gap-3">
         <button onClick={() => router.back()} className="text-sm text-blue-600">Back</button>
         <button onClick={handleConvert} className="px-4 py-2 bg-green-600 text-white rounded">
           {status === "processing" ? "Processing..." : "Convert"}
         </button>
+        {downloadUrl && (
+          <a
+            href={downloadUrl}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Download
+          </a>
+        )}
       </div>
       {message && <p className="mt-3 text-sm">{message}</p>}
     </div>
