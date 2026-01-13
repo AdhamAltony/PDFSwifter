@@ -14,6 +14,9 @@ export default function FileUploadWithProgress({
   const [progress, setProgress] = useState(0);
   const [fileName, setFileName] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [angle, setAngle] = useState("90");
+  const showAngleInput = tool === "rotate-pdf";
+  const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
   const router = useRouter();
   const [usageStatus, setUsageStatus] = useState(null);
@@ -61,6 +64,15 @@ export default function FileUploadWithProgress({
 
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
+    setErrorMessage("");
+    if (showAngleInput) {
+      const deg = Number(angle);
+      if (!Number.isFinite(deg)) {
+        setState("error");
+        setErrorMessage("Please enter a rotation angle (e.g., 90).");
+        return;
+      }
+    }
 
     try {
       setState("uploading");
@@ -80,6 +92,9 @@ export default function FileUploadWithProgress({
           const formData = new FormData();
           formData.append("files", file);
           formData.append("tool", tool);
+          if (showAngleInput) {
+            formData.append("angle", String(angle));
+          }
           const response = await fetch(`/api/utilities/${tool}/fileprocess`, {
             method: "POST",
             body: formData,
@@ -139,6 +154,7 @@ export default function FileUploadWithProgress({
           data: base64,
           size: file.size,
           contentType: file.type || "application/pdf",
+          angle: showAngleInput ? Number(angle) : undefined,
         }));
         const redirectUrl = `/result?status=uploaded&session=${sessionId}`;
         router.push(redirectUrl);
@@ -149,6 +165,9 @@ export default function FileUploadWithProgress({
         const formData = new FormData();
         formData.append("files", file);
         formData.append("tool", tool);
+        if (showAngleInput) {
+          formData.append("angle", String(angle));
+        }
         const response = await fetch(`/api/utilities/${tool}/fileprocess`, {
           method: "POST",
           body: formData,
@@ -187,6 +206,7 @@ export default function FileUploadWithProgress({
     } catch (error) {
       console.error("Upload error:", error);
       setState("error");
+      setErrorMessage("Upload failed. Please try again.");
     }
   };
 
@@ -195,6 +215,7 @@ export default function FileUploadWithProgress({
     setProgress(0);
     setFileName("");
     setSelectedFiles([]);
+    setErrorMessage("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -203,6 +224,27 @@ export default function FileUploadWithProgress({
   return (
     <div className="w-full max-w-lg mx-auto space-y-6">
       <UsageBanner usage={usageStatus} loading={usageLoading} />
+      {showAngleInput && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Rotation angle</p>
+              <p className="text-xs text-gray-500">Enter degrees to rotate (e.g., 90, 180, 270).</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={angle}
+                onChange={(e) => setAngle(e.target.value)}
+                className="w-24 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                placeholder="90"
+                aria-label="Rotation angle in degrees"
+              />
+              <span className="text-sm text-gray-600">deg</span>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="relative">
         <input
           ref={fileInputRef}
@@ -269,9 +311,11 @@ export default function FileUploadWithProgress({
         {state === 'error' && (
           <button onClick={reset} className="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors">Try Again</button>
         )}
-        
-        <button onClick={() => { setState('uploading'); setProgress(50); }} className="px-3 py-2 bg-gray-200 text-gray-700 rounded text-xs">Test</button>
       </div>
+
+      {errorMessage && (
+        <div className="text-sm text-red-600">{errorMessage}</div>
+      )}
 
       <UsageLimitModal
         open={usageModalOpen}
