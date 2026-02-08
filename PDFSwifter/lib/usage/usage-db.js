@@ -60,9 +60,10 @@ export async function incrementUsage({ ip, token, userId, toolKey, date = new Da
 }
 
 export async function getUsageStatus({ ip, token, userId, toolKey, date = new Date() }) {
-  const plan = "free";
+  const plan = await getPlanForClient({ ip, token, userId });
   const config = await getToolsConfig();
-  const limit = config.plans?.standard?.monthlyLimit ?? null;
+  const planConfig = config.plans?.[plan] || config.plans?.standard || {};
+  const limit = planConfig.monthlyLimit ?? null;
   const monthKey = getMonthKey(date);
 
   const clientKey = getClientKey({ ip, token, userId });
@@ -109,5 +110,6 @@ async function checkPremiumStatus(ip, token) {
 }
 
 export async function getPlanForClient({ ip, token }) {
-  return "free";
+  const isPremium = await checkPremiumStatus(ip, token);
+  return isPremium ? "premium" : "standard";
 }

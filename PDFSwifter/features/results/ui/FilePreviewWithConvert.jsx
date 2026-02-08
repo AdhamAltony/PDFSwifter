@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Lightweight preview + convert fallback component.
@@ -7,33 +7,32 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
   const router = useRouter();
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
-  const [payload, setPayload] = useState({ filename, base64Data, tool, contentType, angle: undefined });
-  const [hydrating, setHydrating] = useState(Boolean(sessionId));
   const [downloadUrl, setDownloadUrl] = useState("");
 
-  // Hydrate from sessionStorage when a sessionId is provided (client-side only).
-  useEffect(() => {
-    if (!sessionId || typeof window === "undefined") return;
+  const hydrated = useMemo(() => {
+    const basePayload = { filename, base64Data, tool, contentType, angle: undefined };
+    if (!sessionId || typeof window === "undefined") {
+      return { payload: basePayload, message: "" };
+    }
     try {
       const raw = sessionStorage.getItem(sessionId);
       if (!raw) {
-        setMessage("Session expired. Please upload again.");
-        setHydrating(false);
-        return;
+        return { payload: basePayload, message: "Session expired. Please upload again." };
       }
       const parsed = JSON.parse(raw);
-      setPayload({
-        filename: parsed.filename || filename,
-        base64Data: parsed.data || base64Data,
-        tool: parsed.tool || tool,
-        contentType: parsed.contentType || contentType,
-        angle: parsed.angle,
-      });
-      setHydrating(false);
+      return {
+        payload: {
+          filename: parsed.filename || filename,
+          base64Data: parsed.data || base64Data,
+          tool: parsed.tool || tool,
+          contentType: parsed.contentType || contentType,
+          angle: parsed.angle,
+        },
+        message: "",
+      };
     } catch (err) {
-      setMessage("Could not load upload session. Please re-upload.");
-      setHydrating(false);
       console.error("Session hydrate error:", err);
+      return { payload: basePayload, message: "Could not load upload session. Please re-upload." };
     }
   }, [sessionId, filename, base64Data, tool, contentType]);
 
@@ -96,21 +95,15 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
     }
   };
 
-  if (hydrating) {
-    return (
-      <div className="p-6 bg-white rounded shadow">
-        <p>Loading your upload...</p>
-      </div>
-    );
-  }
-
+  const payload = hydrated.payload;
+  const uiMessage = message || hydrated.message;
   const displayName = payload.filename || filename;
   const hasData = payload.base64Data || base64Data;
 
   if (!hasData || !displayName) {
     return (
       <div className="p-6 bg-white rounded shadow">
-        <p>{message || "No file data. Please upload first."}</p>
+        <p>{uiMessage || "No file data. Please upload first."}</p>
         <button onClick={() => router.push('/utilities')} className="mt-4 text-blue-600">Back to tools</button>
       </div>
     );
@@ -134,7 +127,7 @@ export default function FilePreviewWithConvert({ filename, base64Data, tool, con
           </a>
         )}
       </div>
-      {message && <p className="mt-3 text-sm">{message}</p>}
+      {uiMessage && <p className="mt-3 text-sm">{uiMessage}</p>}
     </div>
   );
 }

@@ -69,6 +69,28 @@ export default function UrlToolRunner({ tool }) {
     }
   };
 
+  const resetRunState = () => {
+    cleanupJobPolling();
+    setJobInfo(null);
+    setJobStatus(null);
+    setJobProgress(0);
+    setJobProgressKnown(false);
+    setJobDetail("");
+    setDownloadReadyJob(null);
+    setDownloadInProgress(false);
+    setManualDownloadData(null);
+    setMessage("");
+    setProcessing(false);
+  };
+
+  const handleUrlChange = (value) => {
+    setUrl(value);
+    if (processing) return;
+    if (manualDownloadData || downloadReadyJob || jobInfo || jobStatus || message) {
+      resetRunState();
+    }
+  };
+
   const downloadJobFile = async (job, suggestedFilename) => {
     const endpoint =
       job?.fileUrl ||
@@ -398,16 +420,7 @@ export default function UrlToolRunner({ tool }) {
 
   const handleClear = () => {
     setUrl("");
-    setMessage("");
-    cleanupJobPolling();
-    setJobInfo(null);
-    setJobStatus(null);
-    setJobProgress(0);
-    setJobProgressKnown(false);
-    setJobDetail("");
-    setDownloadReadyJob(null);
-    setDownloadInProgress(false);
-    setProcessing(false);
+    resetRunState();
   };
 
   return (
@@ -427,7 +440,7 @@ export default function UrlToolRunner({ tool }) {
               id="url-input"
               type="url"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="https://www.instagram.com/reel/... or https://www.tiktok.com/@..."
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               disabled={processing}
