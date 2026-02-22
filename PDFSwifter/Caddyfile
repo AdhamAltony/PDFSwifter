@@ -3,7 +3,7 @@
   admin off
 }
 
-{$WEB_DOMAIN} {
+{$WEB_DOMAIN}, www.{$WEB_DOMAIN} {
   encode zstd gzip
   header {
     -Server
