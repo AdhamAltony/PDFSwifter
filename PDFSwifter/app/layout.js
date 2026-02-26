@@ -7,8 +7,14 @@ const adsenseClient =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-6225595378099419";
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-TKCTSGL7";
 export const metadata = {
-  title: "pdfSwifter",
-  description: "Free PDF toolkit for fast conversions, compression, and downloads.",
+  title: {
+    default: "pdfSwifter | Free Online PDF Tools, Converter & Compressor",
+    template: "%s | pdfSwifter",
+  },
+  description:
+    "Free online PDF toolkit — compress PDF, convert PDF to Word, Excel, JPG, rotate PDF pages, and download TikTok & Instagram videos. Fast, free, no installation required.",
+  keywords:
+    "compress pdf online free, pdf to word converter, pdf to excel, pdf to jpg, rotate pdf, merge pdf, download tiktok video, download instagram video, free pdf tools, online pdf compressor",
   icons: {
     icon: "/favicone.png",
     shortcut: "/favicone.png",
@@ -16,6 +22,13 @@ export const metadata = {
   },
   verification: {
     google: "FlijeVlJE9IkcCV8_oGSUttoWNekDXjo9kakLDR6Gas",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "pdfSwifter",
+    title: "pdfSwifter | Free Online PDF Tools, Converter & Compressor",
+    description:
+      "Free online PDF toolkit — compress PDF, convert PDF to Word, Excel, JPG, rotate PDF pages, and download TikTok & Instagram videos.",
   },
 };
 

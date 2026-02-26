@@ -10,9 +10,11 @@ const HERO_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_TOP;
 const MIDPAGE_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_MID;
 
 export const metadata = {
-  title: "pdfSwifter | Fast conversions and downloads",
+  title: "pdfSwifter | Free Online PDF Tools — Compress, Convert & Download",
   description:
-    "Free PDF toolkit for conversions, compression, and video downloads. Find the right tool in seconds.",
+    "Free online PDF tools to compress PDF files, convert PDF to Word, Excel, JPG, rotate PDF pages, and download TikTok & Instagram videos without watermark. No installation required.",
+  keywords:
+    "free pdf tools online, compress pdf, pdf to word, pdf to excel, pdf to jpg, rotate pdf, download tiktok video without watermark, download instagram video free",
 };
 export const dynamic = "force-dynamic";
 

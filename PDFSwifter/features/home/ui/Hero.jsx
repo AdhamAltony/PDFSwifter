@@ -22,11 +22,12 @@ const Hero = ({ query, setQuery }) => {
               Free, unlimited PDF tools
             </div>
             <h1 className="mt-5 text-4xl md:text-6xl font-[var(--font-display)] tracking-tight text-slate-900">
-              Work with PDFs like a pro, minus the wait.
+              Free Online PDF Tools — Compress, Convert & Download Instantly
             </h1>
             <p className="mt-4 text-base md:text-lg text-[color:var(--muted)] max-w-xl">
-              Fast conversions, instant video downloads, and a clean workflow that
-              keeps you moving. Search once, get the best tools first.
+              Compress PDF files online for free, convert PDF to Word, Excel, or JPG,
+              rotate PDF pages, and download TikTok & Instagram videos without watermark.
+              No installation required.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">

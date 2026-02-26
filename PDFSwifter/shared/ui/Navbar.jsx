@@ -65,7 +65,7 @@ const Navbar = () => {
             <Link href="/" className="flex items-center">
               <Image
                 src="/pdf-swifter-logo.png"
-                alt="pdfSwifter"
+                alt="pdfSwifter — Free Online PDF Tools, Compress PDF, Convert PDF to Word"
                 width={256}
                 height={256}
                 className="h-32 w-32 rounded-2xl object-contain"

@@ -53,7 +53,7 @@ export default async function sitemap() {
   const enabledToolKeys = allowedToolKeys.filter((key) => supportedToolKeys.has(key));
 
   const utilityEntries = enabledToolKeys.map((key) =>
-    toSitemapEntry(baseUrl, `/utilities/${key}`, "weekly", 0.85, now)
+    toSitemapEntry(baseUrl, `/utilities/${key}`, "daily", 0.9, now)
   );
   const toolsEntries = enabledToolKeys.map((key) =>
     toSitemapEntry(baseUrl, `/tools/${key}`, "weekly", 0.7, now)

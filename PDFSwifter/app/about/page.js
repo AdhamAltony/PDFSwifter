@@ -2,6 +2,14 @@ import React from "react";
 import Link from "next/link";
 import Footer from "@/shared/ui/Footer";
 
+export const metadata = {
+  title: "About pdfSwifter | Free Online PDF Tools & Video Downloader",
+  description:
+    "Learn about pdfSwifter — the free online PDF toolkit for compressing PDF files, converting PDF to Word, Excel, JPG, and downloading TikTok & Instagram videos.",
+  keywords:
+    "about pdfSwifter, free pdf tools, online pdf compressor, pdf converter, tiktok downloader, instagram downloader",
+};
+
 export default function About() {
   const team = [
     {

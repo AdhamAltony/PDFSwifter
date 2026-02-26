@@ -7,6 +7,28 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const tool = resolvedParams?.tool || "unknown";
+  const toolConfig = tools.find((t) => t.href === `/utilities/${tool}`);
+  if (!toolConfig) {
+    return { title: "Tool Not Found | pdfSwifter" };
+  }
+  const description = toolConfig.metaDescription || toolConfig.description;
+  const keywords = toolConfig.keywords || [];
+  return {
+    title: `${toolConfig.title} Online Free | pdfSwifter`,
+    description,
+    keywords: keywords.join(", "),
+    openGraph: {
+      title: `${toolConfig.title} Online Free | pdfSwifter`,
+      description,
+      type: "website",
+      siteName: "pdfSwifter",
+    },
+  };
+}
+
 const TOOL_DETAIL_AD_SLOT =
   process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOOL_DETAIL ??
   process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOOL_PAGE;
@@ -51,10 +73,10 @@ const ToolPage = async ({ params }) => {
               </span>
             )}
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            {isUrlTool
+          <p className="mt-2 text-base text-gray-600">
+            {toolConfig?.description || (isUrlTool
               ? `Enter a URL to use the ${toolConfig?.title || tool} tool.`
-              : `Upload files and apply the ${tool} tool.`}
+              : `Upload files and apply the ${tool} tool.`)}
           </p>
         </header>
         {TOOL_DETAIL_AD_SLOT && (

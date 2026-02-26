@@ -3,6 +3,14 @@ import Footer from "@/shared/ui/Footer";
 import ContactForm from "@/features/contact/ui/ContactForm";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Contact pdfSwifter | Get Help with PDF Tools & Downloads",
+  description:
+    "Contact the pdfSwifter team for help with PDF compression, PDF conversion, video downloads, or feature requests. We reply fast.",
+  keywords:
+    "contact pdfSwifter, pdf tools support, pdf converter help, tiktok downloader support",
+};
+
 export default function ContactPage() {
   return (
     <div

@@ -33,7 +33,7 @@ const Footer = () => {
             <Link href="/" className="inline-flex items-center mb-6">
               <Image
                 src="/pdf-swifter-logo.png"
-                alt="pdfSwifter"
+                alt="pdfSwifter — Free Online PDF Compressor, Converter and Video Downloader"
                 width={128}
                 height={128}
                 className="h-24 w-24 rounded-2xl object-contain"
